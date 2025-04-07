@@ -19,7 +19,6 @@ export default function Home() {
   const handleAddressSubmit = async (data: ChainAddressInfo) => {
     // 이전 오류 상태 초기화
     setSubmitError(null);
-    let isSubmitting = true;
     
     try {
       const chain = getChainById(data.chainId);
@@ -50,8 +49,6 @@ export default function Home() {
       
       // 필요한 경우 오류 알림 표시
       alert(submitError || "주소 제출 중 오류가 발생했습니다. 다시 시도해주세요.");
-    } finally {
-      isSubmitting = false;
     }
   };
 
