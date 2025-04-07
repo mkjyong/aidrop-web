@@ -229,15 +229,6 @@ export function AddressForm({ onSubmit, isSubmitting = false, submitError = null
             </span>
           )}
         </Button>
-        
-        <div className="space-y-2">
-          <p className="text-xs text-center text-gray-500">
-            * 개인정보는 안전하게 보호되며, 분석 목적으로만 사용됩니다
-          </p>
-          <p className="text-xs text-center font-medium text-blue-600">
-            2025년 4월 한정 무료 분석 진행 중!
-          </p>
-        </div>
       </div>
     </Form>
   );
