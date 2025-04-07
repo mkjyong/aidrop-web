@@ -18,18 +18,12 @@ type Database = {
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
-// 디버깅을 위한 로그
-console.log('Supabase URL:', supabaseUrl);
-console.log('Supabase Anon Key exists:', !!supabaseAnonKey);
-
 // Supabase 클라이언트 생성
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
 // 체인 주소 제출 함수 - 단순화 버전
 export async function submitChainAddress(chainId: number, address: string, isEVM: boolean, chainName: string) {
-  try {
-    console.log('Submitting to Supabase:', { chainId, address, isEVM, chainName });
-    
+  try {    
     // 사용자 제출 정보만 저장
     const { data, error } = await supabase
       .from('user_submissions')
@@ -50,7 +44,6 @@ export async function submitChainAddress(chainId: number, address: string, isEVM
       throw error;
     }
     
-    console.log('Data saved successfully:', data);
     return data;
   } catch (error) {
     console.error('Failed to submit address:', error);

@@ -12,11 +12,6 @@ import { ChainAddressInfo } from "@/lib/utils";
 import { getChainById, chains } from "@/lib/chains";
 import { submitChainAddress } from "@/lib/supabase";
 
-// 디버깅을 위한 로그 추가
-console.log("===== DEBUGGING SUPABASE CONNECTION =====");
-console.log('Page loaded. NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
-console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-
 // 현재 날짜 (2025년 4월 7일)
 const currentDate = new Date(2025, 3, 7);
 const formattedDate = new Intl.DateTimeFormat('ko-KR', { 
@@ -36,17 +31,11 @@ export default function Home() {
     setIsSubmitting(true);
     
     try {
-      console.log("Chain ID:", data.chainId, "Address:", data.address);
       const chain = getChainById(data.chainId);
       
       if (!chain) {
         throw new Error("선택한 체인 정보를 찾을 수 없습니다.");
       }
-      
-      console.log("Selected chain:", chain.name);
-      
-      // 추가 디버깅 로그
-      console.log("Attempting to save to Supabase with URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
       
       // Supabase에 데이터 저장
       await submitChainAddress(
@@ -55,9 +44,7 @@ export default function Home() {
         chain.isEVM, 
         chain.name
       );
-      
-      console.log("데이터가 성공적으로 저장되었습니다.");
-      
+            
       // 상태 업데이트
       setSubmittedInfo(data);
     } catch (error) {
