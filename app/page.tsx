@@ -14,11 +14,6 @@ import { submitChainAddress } from "@/lib/supabase";
 
 // 현재 날짜 (2025년 4월 7일)
 const currentDate = new Date(2025, 3, 7);
-const formattedDate = new Intl.DateTimeFormat('ko-KR', { 
-  year: 'numeric', 
-  month: 'long', 
-  day: 'numeric' 
-}).format(currentDate);
 
 export default function Home() {
   const [submittedInfo, setSubmittedInfo] = useState<ChainAddressInfo | null>(null);

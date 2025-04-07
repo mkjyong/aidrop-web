@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle, ExternalLink, Share2 } from "lucide-react";
+import { CheckCircle, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Chain, getChainById, getExplorerAddressUrl } from "@/lib/chains";
 

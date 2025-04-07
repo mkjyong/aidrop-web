@@ -1,11 +1,13 @@
 "use client";
 
+import Link from "next/link";
+
 export function Header() {
   return (
     <header className="w-full py-4 bg-white/90 backdrop-blur-sm border-b border-blue-100 fixed top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
-          <a href="/" className="flex items-center gap-2 text-blue-600">
+          <Link href="/" className="flex items-center gap-2 text-blue-600">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 100 100"
@@ -26,7 +28,7 @@ export function Header() {
               <circle cx="35" cy="40" r="5" fill="#ffffff" fillOpacity="0.6" />
             </svg>
             <span className="font-bold text-xl">AiDrop</span>
-          </a>
+          </Link>
           
           <nav className="flex gap-6">
             <a href="#top" className="text-gray-600 hover:text-blue-600 transition-colors">홈</a>

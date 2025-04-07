@@ -6,9 +6,33 @@ type Database = {
   public: {
     Tables: {
       user_submissions: {
-        Row: any;
-        Insert: any;
-        Update: any;
+        Row: {
+          id?: number;
+          chain_id: number;
+          address: string;
+          is_evm: boolean;
+          chain_name: string;
+          status: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          chain_id: number;
+          address: string;
+          is_evm: boolean;
+          chain_name: string;
+          status: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Update: {
+          chain_id?: number;
+          address?: string;
+          is_evm?: boolean;
+          chain_name?: string;
+          status?: string;
+          updated_at?: string;
+        };
       }
     };
   };
