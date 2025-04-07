@@ -67,7 +67,7 @@ export default function Home() {
   };
 
   // 텔레그램 공유 함수
-  const shareToTelegram = (chainId: number, address: string) => {
+  const shareToTelegram = (chainId: number) => {
     const text = generateShareText(chainId);
     window.open(`https://t.me/share/url?url=${encodeURIComponent("https://aidrop.me")}&text=${encodeURIComponent(text)}`);
   };
@@ -156,7 +156,7 @@ export default function Home() {
                         </p>
                         <div className="flex justify-center gap-4 mt-4">
                           <button
-                            onClick={() => shareToTelegram(submittedInfo.chainId, submittedInfo.address)}
+                            onClick={() => shareToTelegram(submittedInfo.chainId)}
                             className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors"
                             aria-label="텔레그램에 공유하기"
                           >
