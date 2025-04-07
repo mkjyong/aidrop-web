@@ -12,18 +12,14 @@ import { ChainAddressInfo } from "@/lib/utils";
 import { getChainById, chains } from "@/lib/chains";
 import { submitChainAddress } from "@/lib/supabase";
 
-// 현재 날짜 (2025년 4월 7일)
-const currentDate = new Date(2025, 3, 7);
-
 export default function Home() {
   const [submittedInfo, setSubmittedInfo] = useState<ChainAddressInfo | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleAddressSubmit = async (data: ChainAddressInfo) => {
     // 이전 오류 상태 초기화
     setSubmitError(null);
-    setIsSubmitting(true);
+    let isSubmitting = true;
     
     try {
       const chain = getChainById(data.chainId);
@@ -55,7 +51,7 @@ export default function Home() {
       // 필요한 경우 오류 알림 표시
       alert(submitError || "주소 제출 중 오류가 발생했습니다. 다시 시도해주세요.");
     } finally {
-      setIsSubmitting(false);
+      isSubmitting = false;
     }
   };
 
