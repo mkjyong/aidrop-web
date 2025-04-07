@@ -3,6 +3,7 @@
 import { CheckCircle, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Chain, getChainById, getExplorerAddressUrl } from "@/lib/chains";
+import { useMemo } from "react";
 
 interface SuccessMessageProps {
   chainId: number;
@@ -10,7 +11,26 @@ interface SuccessMessageProps {
 }
 
 export function SuccessMessage({ chainId, address }: SuccessMessageProps) {
-  const chain: Chain | undefined = getChainById(chainId);
+  // 체인 정보를 메모이제이션하여 불필요한 재계산 방지
+  const chain: Chain | undefined = useMemo(() => getChainById(chainId), [chainId]);
+  
+  // 주소 포맷팅 함수 (재사용성)
+  const formatAddress = (address: string): string => {
+    if (!address || address.length < 8) return address;
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
+  
+  // 익스플로러에서 보기 기능
+  const handleViewInExplorer = () => {
+    if (!chain || !address) return;
+    
+    try {
+      const url = getExplorerAddressUrl(chain, address);
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (error) {
+      console.error("익스플로러 URL을 열 수 없습니다:", error);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center text-center space-y-6">
@@ -25,11 +45,11 @@ export function SuccessMessage({ chainId, address }: SuccessMessageProps) {
         <div className="flex flex-col items-center gap-1">
           <div className="inline-flex items-center justify-center gap-2 px-3 py-1 bg-blue-50 rounded-full border border-blue-100 text-blue-700 font-medium text-sm">
             <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-            {chain?.name || "Unknown Chain"}
+            {chain?.name || "알 수 없는 체인"}
           </div>
           <p className="text-gray-600 text-lg">
             <span className="font-mono bg-gray-100 px-2 py-1 rounded text-blue-600">
-              {address.slice(0, 6)}...{address.slice(-4)}
+              {formatAddress(address)}
             </span>
             에 대한 온체인 성격 분석이 진행 중입니다
           </p>
@@ -48,11 +68,8 @@ export function SuccessMessage({ chainId, address }: SuccessMessageProps) {
               variant="outline" 
               size="sm"
               className="bg-white border-blue-200 hover:bg-blue-50 text-blue-600"
-              onClick={() => {
-                if (chain && address) {
-                  window.open(getExplorerAddressUrl(chain, address), "_blank");
-                }
-              }}
+              onClick={handleViewInExplorer}
+              disabled={!chain || !address}
             >
               <ExternalLink className="h-4 w-4 mr-1" />
               익스플로러에서 보기

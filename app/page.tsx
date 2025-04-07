@@ -7,7 +7,7 @@ import { FeatureSection } from "@/components/feature-section";
 import { ProcessSteps } from "@/components/process-steps";
 import { AddressForm } from "@/components/address-form";
 import { SuccessMessage } from "@/components/success-message";
-import { ChevronDown, ArrowRight, Layers, LucideShieldCheck, Share2 } from "lucide-react";
+import { ChevronDown, ArrowRight, Layers, LucideShieldCheck } from "lucide-react";
 import { ChainAddressInfo } from "@/lib/utils";
 import { getChainById, chains } from "@/lib/chains";
 import { submitChainAddress } from "@/lib/supabase";
@@ -15,6 +15,12 @@ import { submitChainAddress } from "@/lib/supabase";
 export default function Home() {
   const [submittedInfo, setSubmittedInfo] = useState<ChainAddressInfo | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // 공유 텍스트 생성 함수
+  const generateShareText = (chainId: number) => {
+    const chain = getChainById(chainId);
+    return `저의 ${chain?.name || ""} 온체인 아이덴티티를 AiDrop에서 분석 중입니다! 2주 후 제 지갑으로 온체인 MBTI NFT를 받을 예정이에요. 당신도 참여해보세요!`;
+  };
 
   const handleAddressSubmit = async (data: ChainAddressInfo) => {
     // 이전 오류 상태 초기화
@@ -24,7 +30,16 @@ export default function Home() {
       const chain = getChainById(data.chainId);
       
       if (!chain) {
-        throw new Error("선택한 체인 정보를 찾을 수 없습니다.");
+        const errorMessage = "선택한 체인 정보를 찾을 수 없습니다.";
+        setSubmitError(errorMessage);
+        return;
+      }
+      
+      // 주소 형식 간단 검증 (예시: 최소 길이)
+      if (data.address.trim().length < 10) {
+        const errorMessage = "유효하지 않은 주소 형식입니다.";
+        setSubmitError(errorMessage);
+        return;
       }
       
       // Supabase에 데이터 저장
@@ -41,15 +56,39 @@ export default function Home() {
       console.error("데이터 저장 중 오류가 발생했습니다:", error);
       
       // 사용자 친화적인 오류 메시지 설정
-      if (error instanceof Error) {
-        setSubmitError(error.message);
-      } else {
-        setSubmitError("주소 제출 중 오류가 발생했습니다. 다시 시도해주세요.");
-      }
+      const errorMessage = error instanceof Error 
+        ? "저장 중 문제가 발생했습니다: " + error.message.split(":")[0]  // 상세 오류 메시지 제한
+        : "주소 제출 중 오류가 발생했습니다. 다시 시도해주세요.";
       
-      // 필요한 경우 오류 알림 표시
-      alert(submitError || "주소 제출 중 오류가 발생했습니다. 다시 시도해주세요.");
+      setSubmitError(errorMessage);
+      
+      // UI에 오류 표시 (alert 대신 인라인 방식으로 변경)
     }
+  };
+
+  // 텔레그램 공유 함수
+  const shareToTelegram = (chainId: number, address: string) => {
+    const text = generateShareText(chainId);
+    window.open(`https://t.me/share/url?url=${encodeURIComponent("https://aidrop.me")}&text=${encodeURIComponent(text)}`);
+  };
+
+  // 트위터 공유 함수
+  const shareToTwitter = (chainId: number) => {
+    const text = generateShareText(chainId);
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent("https://aidrop.me")}`);
+  };
+
+  // 클립보드 복사 함수
+  const copyToClipboard = (chainId: number) => {
+    const text = generateShareText(chainId) + " https://aidrop.me";
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        // 더 좋은 방법으로는 토스트 메시지 사용
+        alert('공유 텍스트가 클립보드에 복사되었습니다!');
+      })
+      .catch(err => {
+        console.error('클립보드 복사 실패:', err);
+      });
   };
 
   return (
@@ -101,6 +140,13 @@ export default function Home() {
               {/* 우측: 입력 폼 */}
               <div className="lg:w-1/2 w-full max-w-md mx-auto">
                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-gray-200 shadow-xl">
+                  {/* 오류 메시지 표시 */}
+                  {submitError && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                      {submitError}
+                    </div>
+                  )}
+                  
                   {submittedInfo ? (
                     <div className="mt-8 flex flex-col items-center">
                       <SuccessMessage chainId={submittedInfo.chainId} address={submittedInfo.address} />
@@ -110,11 +156,7 @@ export default function Home() {
                         </p>
                         <div className="flex justify-center gap-4 mt-4">
                           <button
-                            onClick={() => {
-                              const chain = getChainById(submittedInfo.chainId);
-                              const text = `저의 ${chain?.name || ""} 온체인 아이덴티티를 AiDrop에서 분석 중입니다! 2주 후 제 지갑으로 온체인 MBTI NFT를 받을 예정이에요. 당신도 참여해보세요! https://aidrop.me`;
-                              window.open(`https://t.me/share/url?url=https://aidrop.me&text=${encodeURIComponent(text)}`);
-                            }}
+                            onClick={() => shareToTelegram(submittedInfo.chainId, submittedInfo.address)}
                             className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors"
                             aria-label="텔레그램에 공유하기"
                           >
@@ -123,11 +165,7 @@ export default function Home() {
                             </svg>
                           </button>
                           <button
-                            onClick={() => {
-                              const chain = getChainById(submittedInfo.chainId);
-                              const text = `저의 ${chain?.name || ""} 온체인 아이덴티티를 AiDrop에서 분석 중입니다! 2주 후 제 지갑으로 온체인 MBTI NFT를 받을 예정이에요. 당신도 참여해보세요!`;
-                              window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=https://aidrop.me`);
-                            }}
+                            onClick={() => shareToTwitter(submittedInfo.chainId)}
                             className="bg-black text-white p-2 rounded-full hover:bg-gray-800 transition-colors"
                             aria-label="X(트위터)에 공유하기"
                           >
@@ -136,17 +174,14 @@ export default function Home() {
                             </svg>
                           </button>
                           <button
-                            onClick={() => {
-                              const chain = getChainById(submittedInfo.chainId);
-                              const text = `저의 ${chain?.name || ""} 온체인 아이덴티티를 AiDrop에서 분석 중입니다! 2주 후 제 지갑으로 온체인 MBTI NFT를 받을 예정이에요. 당신도 참여해보세요! https://aidrop.me`;
-                              navigator.clipboard.writeText(text).then(() => {
-                                alert('공유 텍스트가 클립보드에 복사되었습니다!');
-                              });
-                            }}
+                            onClick={() => copyToClipboard(submittedInfo.chainId)}
                             className="bg-gray-700 text-white p-2 rounded-full hover:bg-gray-800 transition-colors"
                             aria-label="텍스트 복사하기"
                           >
-                            <Share2 size={24} />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
                           </button>
                         </div>
                       </div>
