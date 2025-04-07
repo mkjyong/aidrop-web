@@ -14,33 +14,33 @@ export function Footer() {
               <span className="text-lg font-bold text-gray-900">AiDrop</span>
             </div>
             <p className="text-gray-600 text-sm">
-              AI 기반 온체인 데이터 분석을 통해 더 나은 에어드랍과 마케팅을 제공합니다.
+              Providing better airdrops and marketing through AI-based onchain data analysis.
             </p>
           </div>
 
           <div>
-            <h3 className="font-semibold text-gray-900 mb-4">링크</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">Links</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="#features" className="text-gray-600 hover:text-blue-600 text-sm">
-                  특징
+                  Features
                 </Link>
               </li>
               <li>
                 <Link href="#process" className="text-gray-600 hover:text-blue-600 text-sm">
-                  프로세스
+                  Process
                 </Link>
               </li>
               <li>
                 <Link href="#submit" className="text-gray-600 hover:text-blue-600 text-sm">
-                  참여하기
+                  Participate
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold text-gray-900 mb-4">커뮤니티</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">Community</h3>
             <div className="flex space-x-4">
               <a 
                 href="https://x.com/aidrop_official?s=21" 

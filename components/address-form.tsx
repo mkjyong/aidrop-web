@@ -79,48 +79,48 @@ export function AddressForm({ onSubmit, isSubmitting = false, submitError = null
     
     switch (chain.id) {
       case 2011: // Solana
-        return "Solana 주소 (예: 3XdZWxhwsx...)";
+        return "Solana address (e.g. 3XdZWxhwsx...)";
       case 3030: // Sui
-        return "0x... (Sui 주소, 64-66자)";
+        return "0x... (Sui address, 64-66 characters)";
       case 4040: // NEAR
-        return "계정ID.near";
-      default: // EVM 체인
-        return "0x... (42자)";
+        return "accountID.near";
+      default: // EVM chains
+        return "0x... (42 characters)";
     }
   };
 
   const getAddressErrorMessage = () => {
-    if (!selectedChainId) return "유효한 주소를 입력해주세요";
+    if (!selectedChainId) return "Please enter a valid address";
     
     const chain = getChainById(selectedChainId);
-    if (!chain) return "유효한 주소를 입력해주세요";
+    if (!chain) return "Please enter a valid address";
     
     switch (chain.id) {
       case 2011: // Solana
-        return "유효한 Solana 주소를 입력해주세요";
+        return "Please enter a valid Solana address";
       case 3030: // Sui
-        return "유효한 Sui 주소를 입력해주세요 (0x로 시작하는 64-66자리)";
+        return "Please enter a valid Sui address (64-66 characters starting with 0x)";
       case 4040: // NEAR
-        return "유효한 NEAR 주소를 입력해주세요 (계정ID.near 형식)";
-      default: // EVM 체인
-        return "유효한 주소를 입력해주세요 (0x로 시작하는 42자리)";
+        return "Please enter a valid NEAR address (in accountID.near format)";
+      default: // EVM chains
+        return "Please enter a valid address (42 characters starting with 0x)";
     }
   };
 
   return (
     <Form onSubmit={handleSubmit}>
       <div className="space-y-5">
-        {/* Supabase 제출 오류 메시지 */}
+        {/* Supabase submission error message */}
         {submitError && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">
             {submitError}
           </div>
         )}
 
-        {/* 체인 선택 */}
+        {/* Chain selection */}
         <FormField name="chain">
           <div className="space-y-3">
-            <FormLabel className="text-base font-medium">체인 선택</FormLabel>
+            <FormLabel className="text-base font-medium">Select Chain</FormLabel>
             <Select 
               onValueChange={(value) => {
                 setSelectedChainId(Number(value));
@@ -131,11 +131,11 @@ export function AddressForm({ onSubmit, isSubmitting = false, submitError = null
               <SelectTrigger 
                 className={`h-11 ${isChainInvalid ? "border-red-500 focus-visible:ring-red-300" : "border-blue-200 focus-visible:ring-blue-200"} transition-all bg-white/90 shadow-sm`}
               >
-                <SelectValue placeholder="분석할 체인을 선택하세요" />
+                <SelectValue placeholder="Select a chain to analyze" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel className="text-blue-600 font-medium">EVM 체인</SelectLabel>
+                  <SelectLabel className="text-blue-600 font-medium">EVM Chains</SelectLabel>
                   {evmChains.map(chain => (
                     <SelectItem 
                       key={chain.id} 
@@ -149,7 +149,7 @@ export function AddressForm({ onSubmit, isSubmitting = false, submitError = null
                 <SelectSeparator />
                 
                 <SelectGroup>
-                  <SelectLabel className="text-purple-600 font-medium">Non-EVM 체인</SelectLabel>
+                  <SelectLabel className="text-purple-600 font-medium">Non-EVM Chains</SelectLabel>
                   {nonEvmChains.map(chain => (
                     <SelectItem 
                       key={chain.id} 
@@ -163,23 +163,23 @@ export function AddressForm({ onSubmit, isSubmitting = false, submitError = null
             </Select>
             {isChainInvalid && (
               <FormMessage>
-                체인을 선택해주세요
+                Please select a chain
               </FormMessage>
             )}
             
             {selectedChainId && (
               <div className="mt-2 flex items-center gap-2 text-sm text-blue-600">
                 <span className="inline-block w-2 h-2 rounded-full bg-blue-500"></span>
-                <span>{getSelectedChainName()} 체인을 선택하셨습니다</span>
+                <span>You've selected {getSelectedChainName()} chain</span>
               </div>
             )}
           </div>
         </FormField>
 
-        {/* 주소 입력 */}
+        {/* Address input */}
         <FormField name="address">
           <div className="space-y-3">
-            <FormLabel className="text-base font-medium">지갑 주소</FormLabel>
+            <FormLabel className="text-base font-medium">Wallet Address</FormLabel>
             <div className="relative">
               <Input
                 placeholder={getAddressPlaceholder()}
@@ -215,13 +215,13 @@ export function AddressForm({ onSubmit, isSubmitting = false, submitError = null
           {isSubmitting ? (
             <span className="flex items-center justify-center gap-2">
               <Loader2 className="h-5 w-5 animate-spin" />
-              분석 중...
+              Analyzing...
             </span>
           ) : isSubmitted ? (
-            "제출 완료"
+            "Submission Complete"
           ) : (
             <span className="flex items-center justify-center gap-1">
-              나의 온체인 성격 분석 받기
+              Get My Onchain Personality Analysis
               <svg className="w-5 h-5 ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M13.75 6.75L19.25 12L13.75 17.25" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M19 12H4.75" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

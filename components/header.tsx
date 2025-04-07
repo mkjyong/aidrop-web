@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-// 로고 SVG를 별도 컴포넌트로 분리
+// Logo SVG as a separate component
 function LogoSVG() {
   return (
     <svg
@@ -12,29 +12,29 @@ function LogoSVG() {
       height="32"
       aria-hidden="true"
     >
-      {/* 첫 번째 큰 물방울 */}
+      {/* First large droplet */}
       <path
         d="M40 15 C 50 35, 70 50, 70 70 A 25 25 0 1 1 20 60 C 20 40, 30 35, 40 15"
         fill="#2563eb"
       />
-      {/* 두 번째 작은 물방울 */}
+      {/* Second small droplet */}
       <path
         d="M65 30 C 70 40, 80 50, 80 65 A 15 15 0 1 1 50 65 C 50 50, 60 40, 65 30"
         fill="#3b82f6"
       />
-      {/* 하이라이트 */}
+      {/* Highlight */}
       <circle cx="35" cy="40" r="5" fill="#ffffff" fillOpacity="0.6" />
     </svg>
   );
 }
 
-// 탐색 링크 항목 타입
+// Navigation link item type
 type NavLinkProps = {
   href: string;
   label: string;
 };
 
-// 탐색 링크 컴포넌트
+// Navigation link component
 function NavLink({ href, label }: NavLinkProps) {
   return (
     <a 
@@ -47,11 +47,11 @@ function NavLink({ href, label }: NavLinkProps) {
 }
 
 export function Header() {
-  // 탐색 링크 데이터
+  // Navigation link data
   const navLinks: NavLinkProps[] = [
-    { href: "#top", label: "홈" },
-    { href: "#features", label: "특징" },
-    { href: "#process", label: "프로세스" }
+    { href: "#top", label: "Home" },
+    { href: "#features", label: "Features" },
+    { href: "#process", label: "Process" }
   ];
   
   return (
