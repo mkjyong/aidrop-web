@@ -189,7 +189,7 @@ export default function Home() {
                   ) : (
                     <>
                       <div className="mb-6 text-center">
-                        <h2 className="text-2xl font-bold mb-2">What's My Onchain Identity?</h2>
+                        <h2 className="text-2xl font-bold mb-2">What&apos;s My Onchain Identity?</h2>
                         <p className="text-gray-600">Enter your chain and address to receive your unique NFT</p>
                       </div>
                       <AddressForm onSubmit={handleAddressSubmit} />
@@ -228,7 +228,7 @@ export default function Home() {
                 <span>Start Analysis</span>
                 <ArrowRight className="h-5 w-5" />
               </a>
-              <p className="text-xs font-semibold text-blue-600">Don't miss the free analysis opportunity limited to April 2025!</p>
+              <p className="text-xs font-semibold text-blue-600">Don&apos;t miss the free analysis opportunity limited to April 2025!</p>
               <p className="text-xs text-gray-600 mt-1">Analysis results will be provided as an NFT minted to your wallet address in about 2 weeks</p>
             </div>
           </div>

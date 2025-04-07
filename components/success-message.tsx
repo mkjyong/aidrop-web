@@ -58,9 +58,9 @@ export function SuccessMessage({ chainId, address }: SuccessMessageProps) {
 
       <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-5 w-full">
         <div className="space-y-3">
-          <h4 className="font-semibold text-gray-800">What's next?</h4>
+          <h4 className="font-semibold text-gray-800">What&apos;s next?</h4>
           <p className="text-gray-600 text-sm">
-            Once the analysis is complete, we'll issue your unique onchain personality type NFT to your provided wallet address in about 2 weeks.
+            Once the analysis is complete, we&apos;ll issue your unique onchain personality type NFT to your provided wallet address in about 2 weeks.
             (It may take longer depending on circumstances)
           </p>
           <div className="inline-flex flex-wrap gap-3 pt-1">

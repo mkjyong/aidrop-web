@@ -170,7 +170,7 @@ export function AddressForm({ onSubmit, isSubmitting = false, submitError = null
             {selectedChainId && (
               <div className="mt-2 flex items-center gap-2 text-sm text-blue-600">
                 <span className="inline-block w-2 h-2 rounded-full bg-blue-500"></span>
-                <span>You've selected {getSelectedChainName()} chain</span>
+                <span>You&apos;ve selected {getSelectedChainName()} chain</span>
               </div>
             )}
           </div>
