@@ -1,86 +1,90 @@
 "use client";
 
-import { Brain, Cpu, Target, Zap, Layers, CircleCheckBig } from "lucide-react";
+import { Layers, Cpu, Sparkles, BarChart2, Brain, FileSearch } from "lucide-react";
 
-const features = [
-  {
-    icon: <Layers className="h-8 w-8" />,
-    title: "Multichain Analysis",
-    description: "Comprehensively analyze activities across all major blockchains, including not only Ethereum chains but also non-EVM chains such as Solana and Sui."
-  },
-  {
-    icon: <Brain className="h-8 w-8" />,
-    title: "Onchain Personality Analysis",
-    description: "Analyze transaction data to understand your onchain personality. Find out if you're a DeFi user, a gaming user, or an NFT collector."
-  },
-  {
-    icon: <Cpu className="h-8 w-8" />,
-    title: "AI-Based Data Processing",
-    description: "Utilize the latest AI technology to analyze vast onchain data and discover meaningful patterns. Confirm your unique onchain identity."
-  },
-  {
-    icon: <Target className="h-8 w-8" />,
-    title: "Customized Airdrops",
-    description: "No more indiscriminate airdrops with accurate targeting based on chain-specific activity patterns and user characteristics. Discover projects that match your interests and activities."
-  },
-  {
-    icon: <Zap className="h-8 w-8" />,
-    title: "Onchain MBTI NFT",
-    description: "Based on the analysis results, we issue an NFT representing your unique onchain personality type. Show off your onchain identity."
-  },
-  {
-    icon: <CircleCheckBig className="h-8 w-8" />,
-    title: "Cross-Chain Analysis",
-    description: "Comprehensively analyze activities across multiple chains to identify cross-chain activity patterns and correlations. Check what activities you primarily engage in on specific chains."
-  }
-];
+// Placeholder for a potential data visualization component
+const DataFlowVisualization = () => (
+  <div className="aspect-video bg-secondary/50 rounded-lg flex items-center justify-center text-muted-foreground">
+    [Data Flow Visualization Placeholder]
+  </div>
+);
 
 export function FeatureSection() {
   return (
-    <div>
-      <div className="text-center mb-12">
-        <div className="inline-flex items-center justify-center mb-4 px-4 py-1 rounded-full bg-blue-50 border border-blue-100">
-          <span className="text-blue-600 font-medium text-sm">Free analysis in progress, limited to April 2025!</span>
+    <section id="features" className="py-20 md:py-28">
+      <div className="container mx-auto px-4">
+        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">블록체인 데이터로 디지털 정체성 분석</h2>
+          <p className="text-muted-foreground md:text-lg">
+            다양한 블록체인의 온체인 데이터를 AI로 분석하여 유니크한 디지털 정체성을 시각화하고, 
+            블록체인 네트워크 전반의 유의미한 인사이트를 제공합니다.
+          </p>
         </div>
-        <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          AI-Based Multichain Data Analysis
-        </h2>
-        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-          Discover your unique digital identity by analyzing onchain activities across all chains, 
-          from EVM chains to Solana, Sui, and NEAR. No more wasteful airdrops.
-        </p>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        {features.map((feature, index) => (
-          <div 
-            key={index} 
-            className="group p-8 rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            
-            <div className="flex flex-col h-full relative z-10">
-              <div className="mb-6 p-3 rounded-xl bg-gradient-to-r from-blue-100 to-indigo-100 w-fit">
-                <div className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
-                  {feature.icon}
-                </div>
-              </div>
-              
-              <h3 className="text-xl font-bold mb-3 text-gray-800">{feature.title}</h3>
-              <p className="text-gray-600 flex-grow">{feature.description}</p>
-              
-              <div className="h-1 w-12 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mt-6 group-hover:w-20 transition-all duration-300" />
+        <div className="grid md:grid-cols-3 gap-8">
+          {/* Feature 1: Data Aggregation */}
+          <div className="bg-card/50 p-6 rounded-lg border border-border/30 text-center hover:border-primary/50 transition-colors duration-300 ease-in-out transform hover:-translate-y-1">
+            <div className="inline-block p-3 rounded-full bg-primary/10 text-primary mb-4">
+              <Layers size={28} />
             </div>
+            <h3 className="text-xl font-semibold mb-2">멀티체인 데이터 통합</h3>
+            <p className="text-muted-foreground text-sm">EVM, Solana, Sui 등 다양한 체인의 활동 데이터를 표준화하여 통합 분석합니다.</p>
           </div>
-        ))}
-      </div>
+          
+          {/* Feature 2: AI Analysis */}
+          <div className="bg-card/50 p-6 rounded-lg border border-border/30 text-center hover:border-primary/50 transition-colors duration-300 ease-in-out transform hover:-translate-y-1">
+            <div className="inline-block p-3 rounded-full bg-primary/10 text-primary mb-4">
+              <Cpu size={28} />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">AI 기반 패턴 인식</h3>
+            <p className="text-muted-foreground text-sm">고급 알고리즘을 통해 고유한 행동, 관심사 및 패턴을 파악합니다.</p>
+          </div>
+          
+          {/* Feature 3: NFT Generation */}
+          <div className="bg-card/50 p-6 rounded-lg border border-border/30 text-center hover:border-primary/50 transition-colors duration-300 ease-in-out transform hover:-translate-y-1">
+            <div className="inline-block p-3 rounded-full bg-primary/10 text-primary mb-4">
+              <Sparkles size={28} />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">유니크 NFT 발행</h3>
+            <p className="text-muted-foreground text-sm">디지털 정체성을 시각적으로 표현하는 맞춤형 NFT를 생성합니다.</p>
+          </div>
+        </div>
 
-      <div className="mt-16 text-center">
-        <div className="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-full bg-blue-50 border border-blue-100">
-          <span className="w-3 h-3 rounded-full bg-blue-500 animate-pulse" />
-          <span className="text-blue-700 font-medium">Free multichain analysis in progress, limited to April 2025</span>
+        {/* Second Row of Features */}
+        <div className="grid md:grid-cols-3 gap-8 mt-8">
+          {/* Feature 4: User Analysis */}
+          <div className="bg-card/50 p-6 rounded-lg border border-border/30 text-center hover:border-primary/50 transition-colors duration-300 ease-in-out transform hover:-translate-y-1">
+            <div className="inline-block p-3 rounded-full bg-primary/10 text-primary mb-4">
+              <Brain size={28} />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">유저별 성향 분석</h3>
+            <p className="text-muted-foreground text-sm">온체인 활동에 기반한 MBTI와 같은 개인화된 디지털 자산 성향 유형을 제공합니다.</p>
+          </div>
+          
+          {/* Feature 5: Chain Dashboard */}
+          <div className="bg-card/50 p-6 rounded-lg border border-border/30 text-center hover:border-primary/50 transition-colors duration-300 ease-in-out transform hover:-translate-y-1">
+            <div className="inline-block p-3 rounded-full bg-primary/10 text-primary mb-4">
+              <BarChart2 size={28} />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">체인별 데이터 대시보드</h3>
+            <p className="text-muted-foreground text-sm">블록체인 네트워크별 활동과 추세를 실시간으로 모니터링할 수 있는 분석 대시보드를 제공합니다.</p>
+          </div>
+          
+          {/* Feature 6: Detailed Reports */}
+          <div className="bg-card/50 p-6 rounded-lg border border-border/30 text-center hover:border-primary/50 transition-colors duration-300 ease-in-out transform hover:-translate-y-1">
+            <div className="inline-block p-3 rounded-full bg-primary/10 text-primary mb-4">
+              <FileSearch size={28} />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">상세 보고서 생성</h3>
+            <p className="text-muted-foreground text-sm">심층적인 온체인 활동 분석과 인사이트가 담긴 맞춤형 보고서를 생성합니다.</p>
+          </div>
+        </div>
+
+        {/* Optional: Placeholder for more complex visualization */}
+        <div className="mt-16 md:mt-20">
+          <DataFlowVisualization />
         </div>
       </div>
-    </div>
+    </section>
   );
 } 

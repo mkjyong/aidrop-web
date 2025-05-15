@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 // Logo SVG as a separate component
 function LogoSVG() {
@@ -32,30 +33,37 @@ function LogoSVG() {
 type NavLinkProps = {
   href: string;
   label: string;
+  isActive?: boolean;
 };
 
 // Navigation link component
-function NavLink({ href, label }: NavLinkProps) {
+function NavLink({ href, label, isActive }: NavLinkProps) {
   return (
-    <a 
+    <Link 
       href={href} 
-      className="text-gray-600 hover:text-blue-600 transition-colors"
+      className={`transition-colors ${
+        isActive 
+          ? "text-blue-600 font-medium" 
+          : "text-gray-600 hover:text-blue-600"
+      }`}
     >
       {label}
-    </a>
+    </Link>
   );
 }
 
 export function Header() {
+  const pathname = usePathname();
+  
   // Navigation link data
-  const navLinks: NavLinkProps[] = [
-    { href: "#top", label: "Home" },
-    { href: "#features", label: "Features" },
-    { href: "#process", label: "Process" }
+  const navLinks: (Omit<NavLinkProps, 'isActive'> & { exact?: boolean })[] = [
+    { href: "/", label: "Home", exact: true },
+    { href: "/user-analysis", label: "User Analysis" },
+    { href: "/chain-dashboard", label: "Chain Dashboard" },
   ];
   
   return (
-    <header className="w-full py-4 bg-white/90 backdrop-blur-sm border-b border-blue-100 fixed top-0 z-50 shadow-sm">
+    <header className="w-full py-4 bg-white/90 backdrop-blur-sm border-b border-blue-100 sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2 text-blue-600">
@@ -65,7 +73,16 @@ export function Header() {
           
           <nav className="flex gap-6">
             {navLinks.map((link) => (
-              <NavLink key={link.href} href={link.href} label={link.label} />
+              <NavLink 
+                key={link.href} 
+                href={link.href} 
+                label={link.label}
+                isActive={
+                  link.exact 
+                    ? pathname === link.href
+                    : pathname.startsWith(link.href)
+                }
+              />
             ))}
           </nav>
         </div>

@@ -18,7 +18,7 @@ import { validateAddressByChainId, ChainAddressInfo } from "@/lib/utils";
 import { chains, getEVMChains, getNonEVMChains, getChainById } from "@/lib/chains";
 import { Loader2 } from "lucide-react";
 
-interface AddressFormProps {
+export interface AddressFormProps {
   onSubmit: (data: ChainAddressInfo) => void;
   isSubmitting?: boolean;
   submitError?: string | null;
