@@ -2,31 +2,22 @@
 
 import { PersonalityType } from "@/lib/personality-types";
 import { Button } from "@/components/ui/button";
-import { Loader2, Copy, Share2, Check } from "lucide-react";
+import { Copy, Twitter, Send } from "lucide-react";
 import { useRef, useEffect } from "react";
 import html2canvas from "html2canvas";
-import { WalletConnect } from "@/components/wallet-connect";
 
 interface PersonalityResultProps {
   result: PersonalityType;
   secondaryType?: PersonalityType | null; // 부 유형
   secondaryTypePercent?: number; // 부 유형 백분율
-  onMintNFT: () => void;
   onRestart: () => void;
-  walletConnected: boolean;
-  onWalletConnect: (connected: boolean) => void;
-  mintingStatus: "idle" | "minting" | "success" | "error";
 }
 
 export function PersonalityResult({
   result,
   secondaryType,
   secondaryTypePercent,
-  onMintNFT,
-  onRestart,
-  walletConnected,
-  onWalletConnect,
-  mintingStatus
+  onRestart
 }: PersonalityResultProps) {
   const resultCardRef = useRef<HTMLDivElement>(null);
   
@@ -37,15 +28,18 @@ export function PersonalityResult({
     }
   }, []);
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: '내 웹3 성격유형 결과',
-        text: `나의 웹3 성격유형은 ${result.name}입니다! ${result.description.substring(0, 80)}...`,
-        url: window.location.href,
-      })
-      .catch((err) => console.error('공유 실패:', err));
-    }
+  const handleTwitterShare = () => {
+    const text = encodeURIComponent(`나의 웹3 성격유형은 ${result.name}입니다! ${result.description.substring(0, 80)}...`);
+    const url = encodeURIComponent(window.location.href);
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+    window.open(twitterUrl, '_blank');
+  };
+
+  const handleTelegramShare = () => {
+    const text = encodeURIComponent(`나의 웹3 성격유형은 ${result.name}입니다! ${result.description.substring(0, 80)}...`);
+    const url = encodeURIComponent(window.location.href);
+    const telegramUrl = `https://t.me/share/url?url=${url}&text=${text}`;
+    window.open(telegramUrl, '_blank');
   };
 
   const handleCopyLink = () => {
@@ -54,14 +48,58 @@ export function PersonalityResult({
       .catch((err) => console.error('클립보드 복사 실패:', err));
   };
 
-  // NFT 생성용 이미지 캡처
+  // NFT 생성용 이미지 캡처 - oklch 색상 오류 수정
   const captureResultAsImage = async () => {
     if (resultCardRef.current) {
       try {
-        const canvas = await html2canvas(resultCardRef.current);
+        // oklch 색상 문제를 해결하기 위해 임시 스타일 처리
+        const elements = resultCardRef.current.querySelectorAll('*');
+        const originalStyles: { element: HTMLElement; style: string }[] = [];
+        
+        // oklch 색상을 사용하는 요소의 스타일을 임시로 저장하고 변경
+        elements.forEach(el => {
+          const element = el as HTMLElement;
+          if (element.style) {
+            const computedStyle = window.getComputedStyle(element);
+            const hasOklch = 
+              computedStyle.color.includes('oklch') || 
+              computedStyle.backgroundColor.includes('oklch') ||
+              computedStyle.borderColor.includes('oklch');
+            
+            if (hasOklch) {
+              originalStyles.push({ element, style: element.style.cssText });
+              // oklch 색상을 사용하는 요소에 대체 색상 적용
+              if (computedStyle.color.includes('oklch')) {
+                element.style.color = '#333333';
+              }
+              if (computedStyle.backgroundColor.includes('oklch')) {
+                element.style.backgroundColor = '#f8f9fa';
+              }
+              if (computedStyle.borderColor.includes('oklch')) {
+                element.style.borderColor = '#e2e8f0';
+              }
+            }
+          }
+        });
+        
+        // 이미지 캡처
+        const canvas = await html2canvas(resultCardRef.current, {
+          allowTaint: true,
+          useCORS: true,
+          scale: 2,
+          backgroundColor: null,
+          logging: false
+        });
+        
+        // 원래 스타일로 복원
+        originalStyles.forEach(item => {
+          item.element.style.cssText = item.style;
+        });
+        
         return canvas.toDataURL("image/png");
       } catch (error) {
         console.error("Error capturing result:", error);
+        alert("이미지 캡처 중 오류가 발생했습니다.");
       }
     }
     return null;
@@ -80,11 +118,6 @@ export function PersonalityResult({
     document.body.removeChild(a);
   };
 
-  const handleConnectWallet = () => {
-    // Connected 상태로 변경
-    onWalletConnect(true);
-  };
-
   return (
     <div>
       {/* 결과 헤더 */}
@@ -97,11 +130,20 @@ export function PersonalityResult({
           <Button 
             variant="outline" 
             size="sm" 
-            className="flex items-center gap-1" 
-            onClick={handleShare}
+            className="flex items-center gap-1 text-[#1DA1F2] hover:bg-[#1DA1F2]/10" 
+            onClick={handleTwitterShare}
           >
-            <Share2 size={16} />
-            <span>공유하기</span>
+            <Twitter size={16} />
+            <span>트위터</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex items-center gap-1 text-[#0088cc] hover:bg-[#0088cc]/10" 
+            onClick={handleTelegramShare}
+          >
+            <Send size={16} />
+            <span>텔레그램</span>
           </Button>
           <Button 
             variant="outline" 
@@ -178,39 +220,7 @@ export function PersonalityResult({
       <div className="border-t border-gray-200 pt-6 mt-6">
         <h3 className="text-xl font-semibold mb-4">이 결과로 무엇을 할까요?</h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          {!walletConnected ? (
-            <div className="col-span-full bg-blue-50 p-4 rounded-lg">
-              <h4 className="font-semibold mb-2">결과를 NFT로 민팅하기</h4>
-              <p className="text-sm text-gray-600 mb-4">
-                테스트 결과를 블록체인에 영구 기록하고 싶으신가요?<br />
-                지갑을 연결하고 NFT로 발행해보세요!
-              </p>
-              <WalletConnect onConnect={handleConnectWallet} />
-            </div>
-          ) : (
-            <Button 
-              onClick={onMintNFT}
-              disabled={mintingStatus === "minting" || mintingStatus === "success"}
-              className="h-auto py-3"
-            >
-              {mintingStatus === "idle" && "결과를 NFT로 민팅하기"}
-              {mintingStatus === "minting" && (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  민팅 중...
-                </>
-              )}
-              {mintingStatus === "success" && (
-                <>
-                  <Check className="mr-2 h-4 w-4" />
-                  민팅 완료!
-                </>
-              )}
-              {mintingStatus === "error" && "다시 시도하기"}
-            </Button>
-          )}
-          
+        <div className="flex flex-col gap-4 mb-4">
           <Button 
             onClick={downloadResultImage}
             variant="outline"
@@ -218,15 +228,15 @@ export function PersonalityResult({
           >
             결과 이미지 저장하기
           </Button>
+          
+          <Button 
+            onClick={onRestart}
+            variant="ghost"
+            className="w-full"
+          >
+            테스트 다시하기
+          </Button>
         </div>
-        
-        <Button 
-          onClick={onRestart}
-          variant="ghost"
-          className="w-full"
-        >
-          테스트 다시하기
-        </Button>
       </div>
     </div>
   );

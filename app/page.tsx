@@ -107,8 +107,6 @@ export default function Home() {
   const [answers, setAnswers] = useState<number[]>([]);
   const [testCompleted, setTestCompleted] = useState(false);
   const [result, setResult] = useState<PersonalityType | null>(null);
-  const [walletConnected, setWalletConnected] = useState(false);
-  const [mintingStatus, setMintingStatus] = useState<"idle" | "minting" | "success" | "error">("idle");
   const [testMode, setTestMode] = useState<"simple" | "advanced">("simple"); // 기본값을 simple로 설정
   const [secondaryTypeInfo, setSecondaryTypeInfo] = useState<{ type: PersonalityType | null; percent: number }>({ type: null, percent: 0 });
 
@@ -245,30 +243,11 @@ export default function Home() {
     );
   };
 
-  const handleWalletConnect = (connected: boolean) => {
-    setWalletConnected(connected);
-  };
-
-  const handleMintNFT = async () => {
-    if (!result || !walletConnected) return;
-    
-    try {
-      setMintingStatus("minting");
-      // This would be replaced with actual NFT minting logic
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate minting
-      setMintingStatus("success");
-    } catch (error) {
-      console.error("Error minting NFT:", error);
-      setMintingStatus("error");
-    }
-  };
-
   const resetTest = () => {
     setCurrentQuestion(0);
     setAnswers([]);
     setTestCompleted(false);
     setResult(null);
-    setMintingStatus("idle");
     setSecondaryTypeInfo({ type: null, percent: 0 });
   };
 
@@ -329,11 +308,7 @@ export default function Home() {
               {testCompleted && result ? (
                 <PersonalityResult 
                   result={result}
-                  onMintNFT={handleMintNFT}
                   onRestart={resetTest}
-                  walletConnected={walletConnected}
-                  onWalletConnect={handleWalletConnect}
-                  mintingStatus={mintingStatus}
                   secondaryType={secondaryTypeInfo.type}
                   secondaryTypePercent={secondaryTypeInfo.percent}
                 />

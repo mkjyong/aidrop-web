@@ -207,9 +207,9 @@ export function AddressForm({ onSubmit, isSubmitting = false, submitError = null
 
         <Button 
           type="submit" 
-          variant="gradient" 
+          variant="default" 
           size="lg" 
-          className="w-full font-bold py-6 text-base transition-all relative overflow-hidden mt-2"
+          className="w-full font-bold py-6 text-base transition-all relative overflow-hidden mt-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
           disabled={isSubmitted}
         >
           {isSubmitting ? (
