@@ -12,28 +12,28 @@ import { questions as simpleQuestions } from "@/lib/personality-types-simple";
 
 // 유형별 질문에 대한 점수 가중치 정의 (어떤 질문이 어떤 유형에 더 중요한지)
 const typeWeights: Record<string, Record<number, number>> = {
-  "explorer": { 1: 3, 6: 3, 9: 2, 11: 2, 18: 2, 21: 1 },
-  "dao-dreamer": { 4: 3, 7: 3, 13: 2, 16: 1, 19: 3, 21: 2 },
-  "airdrop-hunter": { 1: 2, 6: 2, 10: 3, 11: 2, 17: 1, 21: 1 },
-  "defi-degen": { 1: 3, 3: 2, 10: 1, 12: 3, 19: 2, 22: 1 },
-  "diamond-hands": { 3: 3, 11: 1, 12: 3, 19: 1, 20: 2, 22: 2 },
-  "paper-hands": { 3: 3, 11: 2, 12: 3, 13: 1, 19: 1, 22: 3 },
-  "nft-collector": { 2: 3, 9: 1, 15: 3, 17: 2, 18: 1, 21: 1 },
-  "metaverse-nomad": { 2: 1, 9: 3, 15: 1, 17: 2, 18: 2, 21: 2 },
-  "builder": { 6: 2, 7: 2, 13: 3, 16: 3, 20: 1, 21: 2 },
-  "security-sentinel": { 1: 1, 8: 3, 14: 2, 16: 2, 20: 1, 22: 2 },
-  "privacy-purist": { 7: 2, 8: 2, 14: 3, 17: 2, 19: 3, 21: 3 },
-  "maximalist": { 7: 3, 11: 2, 12: 3, 13: 2, 20: 3, 22: 1 },
-  "omnichain-wanderer": { 3: 1, 6: 3, 9: 1, 17: 1, 18: 2, 23: 2 },
-  "whale": { 3: 2, 8: 2, 12: 3, 18: 2, 19: 3, 25: 1 },
-  "community-connector": { 4: 1, 13: 3, 15: 2, 17: 2, 18: 3, 21: 4 },
-  "alpha-seeker": { 6: 2, 10: 2, 11: 3, 13: 2, 16: 2, 22: 2 },
-  "meme-lord": { 2: 2, 11: 3, 13: 3, 15: 1, 17: 2, 21: 4 },
-  "solidity-sage": { 7: 2, 8: 2, 13: 2, 16: 3, 20: 2, 21: 2 },
-  "governance-guru": { 4: 3, 7: 3, 13: 3, 16: 2, 19: 2, 21: 3 },
-  "layer2-pioneer": { 6: 2, 7: 3, 16: 2, 20: 2, 21: 2, 23: 3 },
-  "refi-advocate": { 5: 2, 7: 3, 19: 3, 20: 2, 21: 3, 24: 3 },
-  "arbitrage-specialist": { 1: 2, 3: 2, 6: 2, 12: 3, 23: 2, 25: 3 }
+  "explorer": { 1: 2, 6: 2, 9: 1.5, 11: 1.5, 18: 1.5, 21: 1 },
+  "dao-dreamer": { 4: 2, 7: 2, 13: 1.5, 16: 1, 19: 1.5, 21: 1 },
+  "airdrop-hunter": { 1: 1.5, 6: 1.5, 10: 2, 11: 1.5, 17: 1, 21: 1 },
+  "defi-degen": { 1: 2, 3: 1.5, 10: 1, 12: 2, 19: 1.5, 22: 1 },
+  "diamond-hands": { 3: 2, 11: 1, 12: 2, 19: 1, 20: 1.5, 22: 1.5 },
+  "paper-hands": { 3: 2, 11: 1.5, 12: 2, 13: 1, 19: 1, 22: 2 },
+  "nft-collector": { 2: 2, 9: 1, 15: 2, 17: 1.5, 18: 1, 21: 1 },
+  "metaverse-nomad": { 2: 1, 9: 2, 15: 1, 17: 1.5, 18: 1.5, 21: 1.5 },
+  "builder": { 6: 1.5, 7: 1.5, 13: 2, 16: 2, 20: 1, 21: 1.5 },
+  "security-sentinel": { 1: 1, 8: 2, 14: 1.5, 16: 1.5, 20: 1, 22: 1.5 },
+  "privacy-purist": { 7: 1.5, 8: 1.5, 14: 2, 17: 1.5, 19: 2, 21: 2 },
+  "maximalist": { 7: 2, 11: 1.5, 12: 2, 13: 1.5, 20: 2, 22: 1 },
+  "omnichain-wanderer": { 3: 1, 6: 2, 9: 1, 17: 1, 18: 1.5, 23: 1.5 },
+  "whale": { 3: 1.5, 8: 1.5, 12: 2, 18: 1.5, 19: 2, 25: 1 },
+  "community-connector": { 4: 1, 13: 2, 15: 1.5, 17: 1.5, 18: 2, 21: 2 },
+  "alpha-seeker": { 6: 1.5, 10: 1.5, 11: 2, 13: 1.5, 16: 1.5, 22: 1.5 },
+  "meme-lord": { 2: 1.5, 11: 2, 13: 2, 15: 1, 17: 1.5, 21: 2 },
+  "solidity-sage": { 7: 1.5, 8: 1.5, 13: 1.5, 16: 2, 20: 1.5, 21: 1.5 },
+  "governance-guru": { 4: 2, 7: 2, 13: 2, 16: 1.5, 19: 1.5, 21: 1.5 },
+  "layer2-pioneer": { 6: 1.5, 7: 2, 16: 1.5, 20: 1.5, 21: 1.5, 23: 2 },
+  "refi-advocate": { 5: 1.5, 7: 2, 19: 2, 20: 1.5, 21: 1.5, 24: 2 },
+  "arbitrage-specialist": { 1: 1.5, 3: 1.5, 6: 1.5, 12: 2, 23: 1.5, 25: 2 }
 };
 
 // 유형별 질문 응답 선호도 (어떤 응답이 어떤 유형에 더 가까운지)
@@ -90,15 +90,15 @@ const typeSimilarities: Record<string, string[]> = {
 
 // 간단 테스트 유형 간 유사성 매트릭스
 const simpleTypeSimilarities: Record<string, string[]> = {
-  "explorer": ["airdrop-hunter", "builder"],
+  "explorer": ["airdrop-hunter", "community-connector"],
   "airdrop-hunter": ["explorer", "defi-degen"],
   "defi-degen": ["airdrop-hunter", "whale"],
-  "diamond-hands": ["maximalist", "whale"],
-  "nft-collector": ["community-connector", "builder"],
-  "builder": ["explorer", "security-sentinel"],
+  "diamond-hands": ["maximalist", "security-sentinel"],
+  "nft-collector": ["community-connector", "explorer"],
+  "builder": ["security-sentinel", "community-connector"],
   "security-sentinel": ["builder", "diamond-hands"],
   "maximalist": ["diamond-hands", "whale"],
-  "whale": ["diamond-hands", "defi-degen"],
+  "whale": ["defi-degen", "maximalist"],
   "community-connector": ["nft-collector", "builder"]
 };
 
@@ -141,6 +141,19 @@ export default function Home() {
     const preferences = testMode === "simple" ? simpleTypePreferences : typePreferences;
     const similarities = testMode === "simple" ? simpleTypeSimilarities : typeSimilarities;
     
+    // 가중치 정규화: 모든 유형의 총 가중치 합을 평균으로 보정
+    const weightSums: Record<string, number> = {};
+    types.forEach(type => {
+      const w = weights[type.id] ?? {};
+      weightSums[type.id] = Object.values(w).reduce((sum, val) => sum + val, 0);
+    });
+    const avgWeightSum = Object.values(weightSums).reduce((sum, val) => sum + val, 0) / types.length;
+    const normFactors: Record<string, number> = {};
+    types.forEach(type => {
+      const sumW = weightSums[type.id] || 1;
+      normFactors[type.id] = avgWeightSum / sumW;
+    });
+    
     // 각 유형별 점수 계산
     const scores: Record<string, number> = {};
     
@@ -159,7 +172,8 @@ export default function Home() {
         
         // 이 유형에 이 질문이 중요하다면 (가중치가 있다면)
         if (weights[typeId] && weights[typeId][questionNum]) {
-          const weight = weights[typeId][questionNum];
+          const rawWeight = weights[typeId][questionNum];
+          const weight = rawWeight * (normFactors[typeId] ?? 1);
           
           // 이 유형이 선호하는 답변이 있다면
           if (preferences[typeId] && preferences[typeId][questionNum]) {
@@ -179,9 +193,6 @@ export default function Home() {
             // 3점 차이는 점수 없음
           }
         }
-        
-        // 기본 점수 추가 (모든 답변에 대해 약간의 영향력)
-        scores[typeId] += answer * 0.1;
       });
     });
     
@@ -191,7 +202,7 @@ export default function Home() {
       if (similarities[typeId]) {
         similarities[typeId].forEach((similarTypeId, index) => {
           // 유사성에 따라 가중치 부여 (첫 번째가 가장 유사)
-          const similarityWeight = 0.2 / (index + 1);
+          const similarityWeight = 0.15 / (index + 1);
           scores[similarTypeId] += score * similarityWeight;
         });
       }

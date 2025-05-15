@@ -207,12 +207,12 @@ export const questions = [
   },
   {
     id: 4,
-    text: "여행 중에 갑자기 흥미로운 NFT 민팅 기회를 발견했다면?",
+    text: "새로운 디앱이나 프로토콜 기능을 발견했을 때, 당신은 어떻게 반응하나요?",
     options: [
-      { value: 1, text: "어떤 상황에서든 놓치지 않고 즉시 민팅한다" },
-      { value: 2, text: "프로젝트를 빠르게 조사한 후 가치가 있다고 판단되면 민팅한다" },
-      { value: 3, text: "안전한 네트워크 환경을 찾을 때까지 기다렸다가 민팅한다" },
-      { value: 4, text: "여행을 방해하고 싶지 않아 패스한다" }
+      { value: 1, text: "즉시 사용해보고 경험을 공유한다" },
+      { value: 2, text: "가치와 잠재력을 조사한 후 사용한다" },
+      { value: 3, text: "안정성을 먼저 고려하고 충분히 검증된 후 사용한다" },
+      { value: 4, text: "관심은 있지만 시간이 생길 때까지 미룬다" }
     ]
   },
   {
@@ -220,9 +220,9 @@ export const questions = [
     text: "친구들과의 모임에서 웹3 주제가 나온다면, 당신이 가장 열정적으로 말하게 되는 것은?",
     options: [
       { value: 1, text: "최근 발견한 새로운 프로토콜과 테스트넷 경험" },
-      { value: 2, text: "특정 코인이나 NFT의 가치와 투자 전략" },
-      { value: 3, text: "웹3 기술의 장기적 가능성과 사회적 영향" },
-      { value: 4, text: "커뮤니티 활동과 함께 경험한 재미있는 이벤트" }
+      { value: 2, text: "특정 코인의 가치와 투자 전략" },
+      { value: 3, text: "특정 NFT의 희귀도(Rarity)와 컬렉터 커뮤니티" },
+      { value: 4, text: "웹3 기술의 장기적 가능성과 사회적 영향" }
     ]
   },
   {
@@ -279,28 +279,28 @@ export const questions = [
 
 // 유형별 질문에 대한 점수 가중치 정의 (어떤 질문이 어떤 유형에 더 중요한지)
 export const typeWeights: Record<string, Record<number, number>> = {
-  "explorer": { 1: 4, 2: 2, 5: 4, 7: 3, 10: 2 },
-  "airdrop-hunter": { 1: 2, 4: 3, 8: 4, 9: 3, 10: 1 },
-  "defi-degen": { 2: 2, 3: 3, 6: 4, 8: 2, 10: 1 },
-  "diamond-hands": { 3: 5, 6: 3, 8: 2, 10: 2, 2: 1 },
-  "nft-collector": { 2: 3, 4: 5, 5: 2, 8: 2, 9: 1 },
-  "builder": { 5: 3, 6: 3, 7: 2, 9: 2, 10: 5 },
-  "security-sentinel": { 1: 3, 4: 2, 7: 5, 8: 3, 3: 1 },
-  "maximalist": { 1: 4, 3: 2, 5: 3, 6: 3, 10: 2 },
-  "whale": { 2: 2, 3: 3, 6: 5, 8: 2, 10: 3 },
-  "community-connector": { 2: 4, 5: 3, 9: 5, 10: 3, 8: 1 }
+  "explorer": { 1: 5, 4: 5, 7: 5, 9: 4, 5: 3 },
+  "airdrop-hunter": { 8: 5, 1: 4, 9: 4, 4: 3, 2: 2 },
+  "defi-degen": { 3: 5, 6: 4, 10: 4, 2: 3, 8: 2 },
+  "diamond-hands": { 3: 5, 6: 5, 10: 4, 5: 4, 2: 1 },
+  "nft-collector": { 2: 5, 5: 5, 9: 4, 8: 3, 4: 2 },
+  "builder": { 6: 5, 10: 4, 4: 4, 5: 3, 9: 2 },
+  "security-sentinel": { 7: 5, 4: 4, 3: 4, 8: 3, 1: 2 },
+  "maximalist": { 10: 5, 5: 4, 1: 4, 2: 3, 9: 3 },
+  "whale": { 6: 5, 10: 4, 3: 4, 2: 3, 9: 3 },
+  "community-connector": { 9: 5, 5: 4, 2: 3, 10: 3, 7: 3 }
 };
 
 // 유형별 질문 응답 선호도 (어떤 응답이 어떤 유형에 더 가까운지)
 export const typePreferences: Record<string, Record<number, number>> = {
-  "explorer": { 1: 1, 2: 1, 5: 1, 7: 2, 10: 1 },
-  "airdrop-hunter": { 1: 2, 4: 1, 8: 1, 9: 4, 10: 2 },
+  "explorer": { 1: 1, 4: 1, 5: 1, 7: 2, 9: 2 },
+  "airdrop-hunter": { 1: 2, 2: 1, 4: 2, 8: 1, 9: 4 },
   "defi-degen": { 2: 2, 3: 3, 6: 4, 8: 2, 10: 2 },
-  "diamond-hands": { 3: 1, 6: 1, 8: 2, 10: 2, 2: 2 },
-  "nft-collector": { 2: 3, 4: 1, 5: 2, 8: 1, 9: 3 },
-  "builder": { 5: 3, 6: 3, 7: 2, 9: 2, 10: 4 },
-  "security-sentinel": { 1: 3, 4: 3, 7: 1, 8: 3, 3: 4 },
-  "maximalist": { 1: 4, 3: 1, 5: 2, 6: 1, 10: 3 },
-  "whale": { 2: 2, 3: 2, 6: 1, 8: 2, 10: 2 },
-  "community-connector": { 2: 1, 5: 4, 9: 1, 10: 3, 8: 4 }
+  "diamond-hands": { 2: 2, 3: 1, 5: 2, 6: 1, 10: 2 },
+  "nft-collector": { 2: 3, 4: 2, 5: 3, 8: 1, 9: 4 },
+  "builder": { 4: 2, 5: 4, 6: 3, 9: 2, 10: 4 },
+  "security-sentinel": { 1: 3, 3: 4, 4: 3, 7: 1, 8: 3 },
+  "maximalist": { 1: 4, 2: 2, 3: 1, 4: 4, 5: 2, 6:1, 9: 3, 10: 3 },
+  "whale": { 2: 2, 3: 1, 6: 1, 9: 3, 10: 2 },
+  "community-connector": { 2: 1, 5: 4, 7:3, 8: 4, 9: 1, 10: 3 }
 }; 

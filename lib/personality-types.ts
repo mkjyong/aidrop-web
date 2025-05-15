@@ -211,6 +211,11 @@ export const personalityTypes: PersonalityType[] = [
   }
 ];
 
+// 모든 유형에 commonTraits 필드를 보장하도록 기본값 설정
+personalityTypes.forEach(pt => {
+  pt.commonTraits = pt.commonTraits ?? [];
+});
+
 // 웹3 성격검사 질문 20개
 export const questions = [
   {
@@ -463,4 +468,79 @@ export const questions = [
       { value: 4, text: "시장 효율성에 관심이 있어 관찰만 하고 기록한다" }
     ]
   }
-]; 
+];
+
+export const typeWeights: Record<string, Record<number, number>> = {
+  "explorer": { 1: 2, 6: 2, 9: 1.5, 11: 1.5, 18: 1.5, 21: 1 },
+  "dao-dreamer": { 4: 2, 7: 2, 13: 1.5, 16: 1, 19: 1.5, 21: 1 },
+  "airdrop-hunter": { 1: 1.5, 6: 1.5, 10: 2, 11: 1.5, 17: 1, 21: 1 },
+  "defi-degen": { 1: 2, 3: 1.5, 10: 1, 12: 2, 19: 1.5, 22: 1 },
+  "diamond-hands": { 3: 2, 11: 1, 12: 2, 19: 1, 20: 1.5, 22: 1.5 },
+  "paper-hands": { 3: 2, 11: 1.5, 12: 2, 13: 1, 19: 1, 22: 2 },
+  "nft-collector": { 2: 2, 9: 1, 15: 2, 17: 1.5, 18: 1, 21: 1 },
+  "metaverse-nomad": { 2: 1, 9: 2, 15: 1, 17: 1.5, 18: 1.5, 21: 1.5 },
+  "builder": { 6: 1.5, 7: 1.5, 13: 2, 16: 2, 20: 1, 21: 1.5 },
+  "security-sentinel": { 1: 1, 8: 2, 14: 1.5, 16: 1.5, 20: 1, 22: 1.5 },
+  "privacy-purist": { 7: 1.5, 8: 1.5, 14: 2, 17: 1.5, 19: 2, 21: 2 },
+  "maximalist": { 7: 2, 11: 1.5, 12: 2, 13: 1.5, 20: 2, 22: 1 },
+  "omnichain-wanderer": { 3: 1, 6: 2, 9: 1, 17: 1, 18: 1.5, 23: 1.5 },
+  "whale": { 3: 1.5, 8: 1.5, 12: 2, 18: 1.5, 19: 2, 25: 1 },
+  "community-connector": { 4: 1, 13: 2, 15: 1.5, 17: 1.5, 18: 2, 21: 2 },
+  "alpha-seeker": { 6: 1.5, 10: 1.5, 11: 2, 13: 1.5, 16: 1.5, 22: 1.5 },
+  "meme-lord": { 2: 1.5, 11: 2, 13: 2, 15: 1, 17: 1.5, 21: 2 },
+  "solidity-sage": { 7: 1.5, 8: 1.5, 13: 1.5, 16: 2, 20: 1.5, 21: 1.5 },
+  "governance-guru": { 4: 2, 7: 2, 13: 2, 16: 1.5, 19: 1.5, 21: 1.5 },
+  "layer2-pioneer": { 6: 1.5, 7: 2, 16: 1.5, 20: 1.5, 21: 1.5, 23: 2 },
+  "refi-advocate": { 5: 1.5, 7: 2, 19: 2, 20: 1.5, 21: 1.5, 24: 2 },
+  "arbitrage-specialist": { 1: 1.5, 3: 1.5, 6: 1.5, 12: 2, 23: 1.5, 25: 2 }
+};
+
+export const typePreferences: Record<string, Record<number, number>> = {
+  "explorer": { 1: 1, 6: 1, 9: 1, 11: 1, 18: 1, 21: 2 },
+  "dao-dreamer": { 4: 4, 7: 4, 13: 1, 16: 2, 19: 3, 21: 3 },
+  "airdrop-hunter": { 1: 1, 6: 1, 10: 1, 11: 2, 17: 2, 21: 1 },
+  "defi-degen": { 1: 1, 3: 3, 10: 1, 12: 1, 19: 1, 22: 1 },
+  "diamond-hands": { 3: 2, 11: 4, 12: 2, 19: 2, 20: 1, 22: 1 },
+  "paper-hands": { 3: 1, 11: 3, 12: 1, 13: 3, 19: 1, 22: 3 },
+  "nft-collector": { 2: 1, 9: 2, 15: 1, 17: 1, 18: 2, 21: 4 },
+  "metaverse-nomad": { 2: 2, 9: 1, 15: 2, 17: 1, 18: 1, 21: 4 },
+  "builder": { 6: 2, 7: 2, 13: 1, 16: 1, 20: 1, 21: 2 },
+  "security-sentinel": { 1: 2, 8: 1, 14: 1, 16: 1, 20: 3, 22: 2 },
+  "privacy-purist": { 7: 1.5, 8: 1.5, 14: 2, 17: 1.5, 19: 2, 21: 2 },
+  "maximalist": { 7: 2, 11: 4, 12: 3, 13: 1, 20: 1, 22: 1 },
+  "omnichain-wanderer": { 3: 3, 6: 1, 9: 2, 17: 1, 18: 1, 23: 1 },
+  "whale": { 3: 3, 8: 1, 12: 1, 18: 1, 19: 1, 25: 1 },
+  "community-connector": { 4: 1, 13: 2, 15: 1.5, 17: 1.5, 18: 2, 21: 2 },
+  "alpha-seeker": { 6: 1, 10: 2, 11: 1, 13: 2, 16: 2, 22: 2 },
+  "meme-lord": { 2: 2, 11: 1, 13: 1, 15: 2, 17: 1, 21: 4 },
+  "solidity-sage": { 7: 2, 8: 1, 13: 2, 16: 1, 20: 2, 21: 2 },
+  "governance-guru": { 4: 2, 7: 2, 13: 2, 16: 1.5, 19: 1.5, 21: 1.5 },
+  "layer2-pioneer": { 6: 1.5, 7: 2, 16: 1.5, 20: 1.5, 21: 1.5, 23: 2 },
+  "refi-advocate": { 5: 1.5, 7: 2, 19: 2, 20: 1.5, 21: 1.5, 24: 2 },
+  "arbitrage-specialist": { 1: 1.5, 3: 1.5, 6: 1.5, 12: 2, 23: 2, 25: 1 }
+};
+
+export const typeSimilarities: Record<string, string[]> = {
+  "explorer": ["omnichain-wanderer", "airdrop-hunter", "layer2-pioneer"],
+  "dao-dreamer": ["governance-guru", "community-connector", "refi-advocate"],
+  "airdrop-hunter": ["explorer", "alpha-seeker", "paper-hands"],
+  "defi-degen": ["arbitrage-specialist", "whale", "paper-hands"],
+  "diamond-hands": ["maximalist", "whale", "security-sentinel"],
+  "paper-hands": ["defi-degen", "airdrop-hunter", "arbitrage-specialist"],
+  "nft-collector": ["metaverse-nomad", "community-connector", "meme-lord"],
+  "metaverse-nomad": ["nft-collector", "community-connector", "explorer"],
+  "builder": ["solidity-sage", "layer2-pioneer", "security-sentinel"],
+  "security-sentinel": ["privacy-purist", "builder", "diamond-hands"],
+  "privacy-purist": ["security-sentinel", "builder", "refi-advocate"],
+  "maximalist": ["diamond-hands", "whale", "community-connector"],
+  "omnichain-wanderer": ["explorer", "arbitrage-specialist", "layer2-pioneer"],
+  "whale": ["diamond-hands", "defi-degen", "maximalist"],
+  "community-connector": ["meme-lord", "dao-dreamer", "governance-guru"],
+  "alpha-seeker": ["airdrop-hunter", "arbitrage-specialist", "explorer"],
+  "meme-lord": ["community-connector", "nft-collector", "alpha-seeker"],
+  "solidity-sage": ["builder", "layer2-pioneer", "security-sentinel"],
+  "governance-guru": ["dao-dreamer", "community-connector", "refi-advocate"],
+  "layer2-pioneer": ["builder", "omnichain-wanderer", "solidity-sage"],
+  "refi-advocate": ["dao-dreamer", "governance-guru", "privacy-purist"],
+  "arbitrage-specialist": ["defi-degen", "omnichain-wanderer", "alpha-seeker"]
+}; 
