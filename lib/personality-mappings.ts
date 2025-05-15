@@ -73,8 +73,8 @@ export const typeSimilarities: Record<string, string[]> = {
   "arbitrage-specialist": ["defi-degen", "omnichain-wanderer", "alpha-seeker"]
 };
 
-export const simpleTypeWeights = {} as any; // TODO: import from simple module if needed
-export const simpleTypePreferences = {} as any;
+export const simpleTypeWeights: Record<string, Record<number, number>> = {}; // TODO: import from simple module if needed
+export const simpleTypePreferences: Record<string, Record<number, number>> = {};
 export const simpleTypeSimilarities: Record<string, string[]> = {
   "explorer": ["airdrop-hunter", "community-connector"],
   "airdrop-hunter": ["explorer", "defi-degen"],
