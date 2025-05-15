@@ -1,8 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { Droplets, Twitter } from "lucide-react";
-
 export function Footer() {
   return (
     <footer className="bg-gray-50 border-t border-gray-200 py-8 mt-auto">

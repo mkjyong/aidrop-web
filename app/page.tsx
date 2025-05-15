@@ -5,7 +5,6 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { PersonalityTest } from "@/components/personality-test";
 import { PersonalityResult } from "@/components/personality-result";
-import { WalletConnect } from "@/components/wallet-connect";
 import { personalityTypes, PersonalityType, questions } from "@/lib/personality-types";
 import { personalityTypes as simplePersonalityTypes } from "@/lib/personality-types-simple";
 import { typeWeights as simpleTypeWeights, typePreferences as simpleTypePreferences } from "@/lib/personality-types-simple";
@@ -143,7 +142,6 @@ export default function Home() {
     const weights = testMode === "simple" ? simpleTypeWeights : typeWeights;
     const preferences = testMode === "simple" ? simpleTypePreferences : typePreferences;
     const similarities = testMode === "simple" ? simpleTypeSimilarities : typeSimilarities;
-    const currentQuestions = testMode === "simple" ? simpleQuestions : questions;
     
     // 각 유형별 점수 계산
     const scores: Record<string, number> = {};
@@ -279,9 +277,6 @@ export default function Home() {
     resetTest();
   };
 
-  // 현재 모드에 따른 테스트 질문
-  const currentQuestions = testMode === "simple" ? simpleQuestions : questions;
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -347,7 +342,7 @@ export default function Home() {
                   currentQuestion={currentQuestion}
                   onAnswer={handleQuestionAnswer}
                   answers={answers}
-                  questions={currentQuestions}
+                  questions={testMode === "simple" ? simpleQuestions : questions}
                 />
               )}
             </div>
