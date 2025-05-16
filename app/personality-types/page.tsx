@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { personalityTypes as advancedTypes } from "@/lib/personality-types";
@@ -10,6 +10,9 @@ import Link from "next/link";
 export default function PersonalityTypesPage() {
   const [activeTab, setActiveTab] = useState<"simple" | "advanced">("simple");
   const [searchTerm, setSearchTerm] = useState("");
+  const [distributionList, setDistributionList] = useState<{ type: string; count: number; percentage: number }[]>([]);
+  const [loadingDistribution, setLoadingDistribution] = useState(true);
+  const [totalUsers, setTotalUsers] = useState<number>(0);
   
   // 현재 탭에 따라 표시할 유형 결정
   const typesToShow = activeTab === "simple" ? simpleTypes : advancedTypes;
@@ -25,6 +28,31 @@ export default function PersonalityTypesPage() {
       )
     : typesToShow;
 
+  // 분포 API 호출
+  useEffect(() => {
+    fetch('/api/personality-distribution')
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then(json => {
+        setDistributionList(json.distribution);
+        setTotalUsers(json.total);
+      })
+      .catch(err => console.error('Distribution load error:', err))
+      .finally(() => setLoadingDistribution(false));
+  }, []);
+
+  // subset 분포 계산
+  const subsetDistribution = useMemo(() => {
+    const ids = activeTab === 'simple'
+      ? simpleTypes.map(t => t.id)
+      : advancedTypes.map(t => t.id);
+    const subset = distributionList.filter(d => ids.includes(d.type));
+    const subsetTotal = subset.reduce((acc, cur) => acc + cur.count, 0);
+    return { subset, subsetTotal };
+  }, [distributionList, activeTab]);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -33,6 +61,9 @@ export default function PersonalityTypesPage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold mb-4">웹3 성격유형 도감</h1>
+            <p className="text-sm text-gray-600 mb-4">
+              {loadingDistribution ? '...' : `총 ${totalUsers}명 테스트 중 ${activeTab === 'simple' ? '기본 유형' : '확장 유형'} ${subsetDistribution.subsetTotal}명 참여`}
+            </p>
             <p className="text-lg text-gray-700 max-w-3xl mx-auto">
               웹3 세계의 다양한 성격유형들을 탐색해보세요. 
               각 유형별 특징과 성향을 확인하고 어떤 유형이 당신과 가장 잘 맞는지 알아보세요.
@@ -93,6 +124,16 @@ export default function PersonalityTypesPage() {
                   <div className="flex items-center gap-3 mb-4">
                     <div className="text-4xl">{type.emoji}</div>
                     <h3 className="text-xl font-bold">{type.name}</h3>
+                  </div>
+                  
+                  {/* 분포 표시 */}
+                  <div className="mb-2 text-sm text-gray-500">
+                    {loadingDistribution
+                      ? '...'
+                      : ((subsetDistribution.subsetTotal > 0
+                          ? ((subsetDistribution.subset.find(d => d.type === type.id)?.count || 0) / subsetDistribution.subsetTotal) * 100
+                          : 0
+                        ).toFixed(1) + '%')}
                   </div>
                   
                   <p className="text-gray-700 mb-4 line-clamp-3">

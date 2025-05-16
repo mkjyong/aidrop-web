@@ -14,6 +14,8 @@ export function Header() {
     { name: "홈", href: "/" },
     { name: "유형 도감", href: "/personality-types" },
     { name: "NFT 갤러리", href: "/nft-gallery" },
+    { name: "기업용", href: "/enterprise" },
+    { name: "뉴스레터", href: "/newsletter" },
   ];
   
   return (
