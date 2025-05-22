@@ -3,92 +3,268 @@
 import { useState } from "react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { FeatureSection } from "@/components/feature-section";
-import { ProcessSteps } from "@/components/process-steps";
-import { AddressForm } from "@/components/address-form";
-import { SuccessMessage } from "@/components/success-message";
-import { ChevronDown, ArrowRight, Layers, LucideShieldCheck } from "lucide-react";
-import { ChainAddressInfo } from "@/lib/utils";
-import { getChainById, chains } from "@/lib/chains";
-import { submitChainAddress } from "@/lib/supabase";
+import { PersonalityTest } from "@/components/personality-test";
+import { PersonalityResult } from "@/components/personality-result";
+import { personalityTypes, PersonalityType, questions } from "@/lib/personality-types";
+import { personalityTypes as simplePersonalityTypes } from "@/lib/personality-types-simple";
+import { typeWeights as simpleTypeWeights, typePreferences as simpleTypePreferences } from "@/lib/personality-types-simple";
+import { questions as simpleQuestions } from "@/lib/personality-types-simple";
+
+// 유형별 질문에 대한 점수 가중치 정의 (어떤 질문이 어떤 유형에 더 중요한지)
+const typeWeights: Record<string, Record<number, number>> = {
+  "explorer": { 1: 2, 6: 2, 9: 1.5, 11: 1.5, 18: 1.5, 21: 1 },
+  "dao-dreamer": { 4: 2, 7: 2, 13: 1.5, 16: 1, 19: 1.5, 21: 1 },
+  "airdrop-hunter": { 1: 1.5, 6: 1.5, 10: 2, 11: 1.5, 17: 1, 21: 1 },
+  "defi-degen": { 1: 2, 3: 1.5, 10: 1, 12: 2, 19: 1.5, 22: 1 },
+  "diamond-hands": { 3: 2, 11: 1, 12: 2, 19: 1, 20: 1.5, 22: 1.5 },
+  "paper-hands": { 3: 2, 11: 1.5, 12: 2, 13: 1, 19: 1, 22: 2 },
+  "nft-collector": { 2: 2, 9: 1, 15: 2, 17: 1.5, 18: 1, 21: 1 },
+  "metaverse-nomad": { 2: 1, 9: 2, 15: 1, 17: 1.5, 18: 1.5, 21: 1.5 },
+  "builder": { 6: 1.5, 7: 1.5, 13: 2, 16: 2, 20: 1, 21: 1.5 },
+  "security-sentinel": { 1: 1, 8: 2, 14: 1.5, 16: 1.5, 20: 1, 22: 1.5 },
+  "privacy-purist": { 7: 1.5, 8: 1.5, 14: 2, 17: 1.5, 19: 2, 21: 2 },
+  "maximalist": { 7: 2, 11: 1.5, 12: 2, 13: 1.5, 20: 2, 22: 1 },
+  "omnichain-wanderer": { 3: 1, 6: 2, 9: 1, 17: 1, 18: 1.5, 23: 1.5 },
+  "whale": { 3: 1.5, 8: 1.5, 12: 2, 18: 1.5, 19: 2, 25: 1 },
+  "community-connector": { 4: 1, 13: 2, 15: 1.5, 17: 1.5, 18: 2, 21: 2 },
+  "alpha-seeker": { 6: 1.5, 10: 1.5, 11: 2, 13: 1.5, 16: 1.5, 22: 1.5 },
+  "meme-lord": { 2: 1.5, 11: 2, 13: 2, 15: 1, 17: 1.5, 21: 2 },
+  "solidity-sage": { 7: 1.5, 8: 1.5, 13: 1.5, 16: 2, 20: 1.5, 21: 1.5 },
+  "governance-guru": { 4: 2, 7: 2, 13: 2, 16: 1.5, 19: 1.5, 21: 1.5 },
+  "layer2-pioneer": { 6: 1.5, 7: 2, 16: 1.5, 20: 1.5, 21: 1.5, 23: 2 },
+  "refi-advocate": { 5: 1.5, 7: 2, 19: 2, 20: 1.5, 21: 1.5, 24: 2 },
+  "arbitrage-specialist": { 1: 1.5, 3: 1.5, 6: 1.5, 12: 2, 23: 1.5, 25: 2 }
+};
+
+// 유형별 질문 응답 선호도 (어떤 응답이 어떤 유형에 더 가까운지)
+const typePreferences: Record<string, Record<number, number>> = {
+  "explorer": { 1: 1, 6: 1, 9: 1, 11: 1, 18: 1, 21: 2 },
+  "dao-dreamer": { 4: 4, 7: 4, 13: 1, 16: 2, 19: 3, 21: 3 },
+  "airdrop-hunter": { 1: 1, 6: 1, 10: 1, 11: 2, 17: 2, 21: 1 },
+  "defi-degen": { 1: 1, 3: 3, 10: 1, 12: 1, 19: 1, 22: 1 },
+  "diamond-hands": { 3: 2, 11: 4, 12: 2, 19: 2, 20: 1, 22: 1 },
+  "paper-hands": { 3: 1, 11: 3, 12: 1, 13: 3, 19: 1, 22: 3 },
+  "nft-collector": { 2: 1, 9: 2, 15: 1, 17: 1, 18: 2, 21: 4 },
+  "metaverse-nomad": { 2: 2, 9: 1, 15: 2, 17: 1, 18: 1, 21: 4 },
+  "builder": { 6: 2, 7: 2, 13: 1, 16: 1, 20: 1, 21: 2 },
+  "security-sentinel": { 1: 2, 8: 1, 14: 1, 16: 1, 20: 3, 22: 2 },
+  "privacy-purist": { 7: 1, 8: 1, 14: 1, 17: 3, 19: 4, 21: 3 },
+  "maximalist": { 7: 2, 11: 4, 12: 3, 13: 1, 20: 1, 22: 1 },
+  "omnichain-wanderer": { 3: 3, 6: 1, 9: 2, 17: 1, 18: 1, 23: 1 },
+  "whale": { 3: 3, 8: 1, 12: 1, 18: 1, 19: 1, 25: 1 },
+  "community-connector": { 4: 3, 13: 1, 15: 2, 17: 1, 18: 1, 21: 4 },
+  "alpha-seeker": { 6: 1, 10: 2, 11: 1, 13: 2, 16: 2, 22: 2 },
+  "meme-lord": { 2: 2, 11: 1, 13: 1, 15: 2, 17: 1, 21: 4 },
+  "solidity-sage": { 7: 2, 8: 1, 13: 2, 16: 1, 20: 2, 21: 2 },
+  "governance-guru": { 4: 4, 7: 4, 13: 1, 16: 2, 19: 4, 21: 3 },
+  "layer2-pioneer": { 6: 1, 7: 2, 16: 1, 20: 2, 21: 2, 23: 1 },
+  "refi-advocate": { 5: 4, 7: 4, 19: 4, 20: 2, 21: 3, 24: 1 },
+  "arbitrage-specialist": { 1: 1, 3: 3, 6: 1, 12: 1, 23: 2, 25: 1 }
+};
+
+// 유형 간 유사성 매트릭스 (유사한 유형들 간의 관계 정의)
+const typeSimilarities: Record<string, string[]> = {
+  "explorer": ["omnichain-wanderer", "airdrop-hunter", "layer2-pioneer"],
+  "dao-dreamer": ["governance-guru", "community-connector", "refi-advocate"],
+  "airdrop-hunter": ["explorer", "alpha-seeker", "paper-hands"],
+  "defi-degen": ["arbitrage-specialist", "whale", "paper-hands"],
+  "diamond-hands": ["maximalist", "whale", "security-sentinel"],
+  "paper-hands": ["defi-degen", "airdrop-hunter", "arbitrage-specialist"],
+  "nft-collector": ["metaverse-nomad", "community-connector", "meme-lord"],
+  "metaverse-nomad": ["nft-collector", "community-connector", "explorer"],
+  "builder": ["solidity-sage", "layer2-pioneer", "security-sentinel"],
+  "security-sentinel": ["privacy-purist", "builder", "diamond-hands"],
+  "privacy-purist": ["security-sentinel", "builder", "refi-advocate"],
+  "maximalist": ["diamond-hands", "whale", "community-connector"],
+  "omnichain-wanderer": ["explorer", "arbitrage-specialist", "layer2-pioneer"],
+  "whale": ["diamond-hands", "defi-degen", "maximalist"],
+  "community-connector": ["meme-lord", "dao-dreamer", "governance-guru"],
+  "alpha-seeker": ["airdrop-hunter", "arbitrage-specialist", "explorer"],
+  "meme-lord": ["community-connector", "nft-collector", "alpha-seeker"],
+  "solidity-sage": ["builder", "layer2-pioneer", "security-sentinel"],
+  "governance-guru": ["dao-dreamer", "community-connector", "refi-advocate"],
+  "layer2-pioneer": ["builder", "omnichain-wanderer", "solidity-sage"],
+  "refi-advocate": ["dao-dreamer", "governance-guru", "privacy-purist"],
+  "arbitrage-specialist": ["defi-degen", "omnichain-wanderer", "alpha-seeker"]
+};
+
+// 간단 테스트 유형 간 유사성 매트릭스
+const simpleTypeSimilarities: Record<string, string[]> = {
+  "explorer": ["airdrop-hunter", "community-connector"],
+  "airdrop-hunter": ["explorer", "defi-degen"],
+  "defi-degen": ["airdrop-hunter", "whale"],
+  "diamond-hands": ["maximalist", "security-sentinel"],
+  "nft-collector": ["community-connector", "explorer"],
+  "builder": ["security-sentinel", "community-connector"],
+  "security-sentinel": ["builder", "diamond-hands"],
+  "maximalist": ["diamond-hands", "whale"],
+  "whale": ["defi-degen", "maximalist"],
+  "community-connector": ["nft-collector", "builder"]
+};
 
 export default function Home() {
-  const [submittedInfo, setSubmittedInfo] = useState<ChainAddressInfo | null>(null);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState<number[]>([]);
+  const [testCompleted, setTestCompleted] = useState(false);
+  const [result, setResult] = useState<PersonalityType | null>(null);
+  const [testMode, setTestMode] = useState<"simple" | "advanced">("simple"); // 기본값을 simple로 설정
+  const [secondaryTypeInfo, setSecondaryTypeInfo] = useState<{ type: PersonalityType | null; percent: number }>({ type: null, percent: 0 });
 
-  // Function to generate share text
-  const generateShareText = (chainId: number) => {
-    const chain = getChainById(chainId);
-    return `I'm analyzing my ${chain?.name || ""} onchain identity on AiDrop! In two weeks, I'll receive an onchain MBTI NFT in my wallet. Join and try it yourself!`;
-  };
-
-  const handleAddressSubmit = async (data: ChainAddressInfo) => {
-    // Reset previous error state
-    setSubmitError(null);
+  const handleQuestionAnswer = (questionIndex: number, answerValue: number) => {
+    // 이전 질문으로 돌아가는 경우 (questionIndex가 현재 질문보다 작을 때)
+    if (questionIndex < currentQuestion) {
+      setCurrentQuestion(questionIndex);
+      return;
+    }
     
-    try {
-      const chain = getChainById(data.chainId);
-      
-      if (!chain) {
-        const errorMessage = "Selected chain information not found.";
-        setSubmitError(errorMessage);
-        return;
-      }
-      
-      // Simple address format validation (example: minimum length)
-      if (data.address.trim().length < 10) {
-        const errorMessage = "Invalid address format.";
-        setSubmitError(errorMessage);
-        return;
-      }
-      
-      // Save data to Supabase
-      await submitChainAddress(
-        data.chainId, 
-        data.address, 
-        chain.isEVM, 
-        chain.name
-      );
-            
-      // Update state
-      setSubmittedInfo(data);
-    } catch (error) {
-      console.error("Error occurred while saving data:", error);
-      
-      // Set user-friendly error message
-      const errorMessage = error instanceof Error 
-        ? "Problem occurred while saving: " + error.message.split(":")[0]  // Limit detailed error message
-        : "Error occurred while submitting address. Please try again.";
-      
-      setSubmitError(errorMessage);
-      
-      // Display error in UI (changed from alert to inline method)
+    const newAnswers = [...answers];
+    newAnswers[questionIndex] = answerValue;
+    setAnswers(newAnswers);
+    
+    // 테스트 모드에 따라 마지막 질문인지 확인
+    const currentQuestions = testMode === "simple" ? simpleQuestions : questions;
+    
+    // Move to the next question if it's not the last one
+    if (currentQuestion < currentQuestions.length - 1) {
+      setCurrentQuestion(prev => prev + 1);
+    } else {
+      // Test is completed, calculate the result
+      setTestCompleted(true);
+      calculateResult(newAnswers);
     }
   };
 
-  // Telegram share function
-  const shareToTelegram = (chainId: number) => {
-    const text = generateShareText(chainId);
-    window.open(`https://t.me/share/url?url=${encodeURIComponent("https://aidrop.me")}&text=${encodeURIComponent(text)}`);
-  };
-
-  // Twitter share function
-  const shareToTwitter = (chainId: number) => {
-    const text = generateShareText(chainId);
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent("https://aidrop.me")}`);
-  };
-
-  // Clipboard copy function
-  const copyToClipboard = (chainId: number) => {
-    const text = generateShareText(chainId) + " https://aidrop.me";
-    navigator.clipboard.writeText(text)
-      .then(() => {
-        // Better method would be to use toast message
-        alert('Share text has been copied to clipboard!');
-      })
-      .catch(err => {
-        console.error('Failed to copy to clipboard:', err);
+  const calculateResult = (answers: number[]) => {
+    // 테스트 모드에 따라 사용할 유형, 가중치, 선호도 등 결정
+    const types = testMode === "simple" ? simplePersonalityTypes : personalityTypes;
+    const weights = testMode === "simple" ? simpleTypeWeights : typeWeights;
+    const preferences = testMode === "simple" ? simpleTypePreferences : typePreferences;
+    const similarities = testMode === "simple" ? simpleTypeSimilarities : typeSimilarities;
+    
+    // 가중치 정규화: 모든 유형의 총 가중치 합을 평균으로 보정
+    const weightSums: Record<string, number> = {};
+    types.forEach(type => {
+      const w = weights[type.id] ?? {};
+      weightSums[type.id] = Object.values(w).reduce((sum, val) => sum + val, 0);
+    });
+    const avgWeightSum = Object.values(weightSums).reduce((sum, val) => sum + val, 0) / types.length;
+    const normFactors: Record<string, number> = {};
+    types.forEach(type => {
+      const sumW = weightSums[type.id] || 1;
+      normFactors[type.id] = avgWeightSum / sumW;
+    });
+    
+    // 각 유형별 점수 계산
+    const scores: Record<string, number> = {};
+    
+    // 모든 유형에 대해 점수 초기화
+    types.forEach((type: PersonalityType) => {
+      scores[type.id] = 0;
+    });
+    
+    // 각 질문에 대한 답변 분석
+    answers.forEach((answer, questionIndex) => {
+      const questionNum = questionIndex + 1; // 질문 번호는 1부터 시작
+      
+      // 모든 유형에 대해 해당 질문이 중요한지, 어떤 답변을 선호하는지 확인
+      types.forEach((type: PersonalityType) => {
+        const typeId = type.id;
+        
+        // 이 유형에 이 질문이 중요하다면 (가중치가 있다면)
+        if (weights[typeId] && weights[typeId][questionNum]) {
+          const rawWeight = weights[typeId][questionNum];
+          const weight = rawWeight * (normFactors[typeId] ?? 1);
+          
+          // 이 유형이 선호하는 답변이 있다면
+          if (preferences[typeId] && preferences[typeId][questionNum]) {
+            const preferredAnswer = preferences[typeId][questionNum];
+            
+            // 선호하는 답변과 사용자의 답변 사이의 근접성에 따라 점수 부여
+            // 답변이 동일하면 가중치 * 2점, 1점 차이면 가중치 * 1점, 2점 차이면 가중치 * 0.5점, 3점 차이면 0점
+            const difference = Math.abs(preferredAnswer - answer);
+            
+            if (difference === 0) {
+              scores[typeId] += weight * 2;
+            } else if (difference === 1) {
+              scores[typeId] += weight * 1;
+            } else if (difference === 2) {
+              scores[typeId] += weight * 0.5;
+            }
+            // 3점 차이는 점수 없음
+          }
+        }
       });
+    });
+    
+    // 베이지안 보정 - 유사한 유형들 간의 점수 영향
+    // 한 유형이 높은 점수를 받으면 유사한 유형들도 약간의 점수를 받게 함
+    Object.entries(scores).forEach(([typeId, score]) => {
+      if (similarities[typeId]) {
+        similarities[typeId].forEach((similarTypeId, index) => {
+          // 유사성에 따라 가중치 부여 (첫 번째가 가장 유사)
+          const similarityWeight = 0.15 / (index + 1);
+          scores[similarTypeId] += score * similarityWeight;
+        });
+      }
+    });
+    
+    // 점수를 내림차순 정렬하여 상위 유형 가져오기
+    const sortedScores = Object.entries(scores)
+      .sort((a, b) => b[1] - a[1]);
+    
+    // 가장 높은 점수 유형
+    const bestMatchTypeId = sortedScores[0][0];
+    const bestMatchScore = sortedScores[0][1];
+    
+    // 두 번째로 높은 점수 유형 (있는 경우)
+    const secondBestMatchTypeId = sortedScores.length > 1 ? sortedScores[1][0] : null;
+    const secondBestMatchScore = sortedScores.length > 1 ? sortedScores[1][1] : 0;
+    
+    // 두 유형 점수의 합을 100%로 보고, 두 번째 유형의 상대적 백분율 계산
+    const totalTopTwoScore = bestMatchScore + secondBestMatchScore;
+    const secondTypePercent = (secondBestMatchScore / totalTopTwoScore) * 100;
+    
+    // 주 유형 설정
+    const matchedType = types.find((type: PersonalityType) => type.id === bestMatchTypeId);
+    setResult(matchedType || types[0]);
+    
+    // 부 유형 설정 (점수가 25% 이상일 때만 의미있게 설정)
+    let secondaryType: PersonalityType | null = null;
+    let secondaryTypePercent = 0;
+
+    if (secondBestMatchTypeId && secondTypePercent >= 25) {
+      const foundType = types.find((type: PersonalityType) => type.id === secondBestMatchTypeId);
+      if (foundType) {
+        secondaryType = foundType;
+        secondaryTypePercent = secondTypePercent;
+      }
+    }
+    
+    // 부 유형 정보 설정
+    setSecondaryTypeInfo({
+      type: secondaryType,
+      percent: secondaryTypePercent
+    });
+    
+    // 디버깅용 - 상위 3개 유형과 점수 확인 (콘솔에만 출력)
+    console.log("Score breakdown:", 
+      sortedScores
+        .slice(0, 3)
+        .map(([typeId, score]) => `${typeId}: ${score.toFixed(2)} (${((score / totalTopTwoScore) * 100).toFixed(1)}%)`)
+    );
+  };
+
+  const resetTest = () => {
+    setCurrentQuestion(0);
+    setAnswers([]);
+    setTestCompleted(false);
+    setResult(null);
+    setSecondaryTypeInfo({ type: null, percent: 0 });
+  };
+
+  const switchTestMode = (mode: "simple" | "advanced") => {
+    setTestMode(mode);
+    resetTest();
   };
 
   return (
@@ -96,7 +272,7 @@ export default function Home() {
       <Header />
       
       <main className="flex-grow">
-        {/* Hero section - integrated with input form */}
+        {/* Hero section */}
         <section className="relative py-16 md:py-24 overflow-hidden">
           {/* Background effects */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 z-0">
@@ -105,131 +281,139 @@ export default function Home() {
           </div>
 
           <div className="container mx-auto px-4 relative z-10">
-            {/* Supported chains display */}
-            <div className="mb-8 text-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-full border border-blue-100 text-blue-600 text-sm font-medium">
-                <Layers className="h-3.5 w-3.5" />
-                <span>Supported Chains: {chains.length} chains including EVM and non-EVM chains</span>
+            <div className="text-center mb-8">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                웹3 온체인 성격검사
+              </h1>
+              <p className="text-lg md:text-xl text-gray-700 mb-6 max-w-3xl mx-auto">
+                웹3 커뮤니티의 밈 문화를 반영한 재미있는 성격유형 테스트로, 당신의 온체인 성향을 알아보세요. 
+                테스트 결과는 NFT로 민팅하여 영원히 소장할 수 있습니다.
+              </p>
+              
+              {/* 테스트 모드 선택 */}
+              <div className="flex justify-center gap-4 mb-8">
+                <button
+                  onClick={() => switchTestMode("simple")}
+                  className={`px-6 py-2 rounded-full font-medium transition-all ${
+                    testMode === "simple" 
+                      ? "bg-blue-100 text-blue-700 border-2 border-blue-500"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  간단 테스트 (10문항)
+                </button>
+                <button
+                  onClick={() => switchTestMode("advanced")}
+                  className={`px-6 py-2 rounded-full font-medium transition-all ${
+                    testMode === "advanced"
+                      ? "bg-purple-100 text-purple-700 border-2 border-purple-500"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  심화 테스트 (25문항)
+                </button>
               </div>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-12 items-center">
-              {/* Left: Title and description */}
-              <div className="lg:w-1/2 text-center lg:text-left">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Discover Your Multichain Onchain Identity
-                </h1>
-                <p className="text-lg md:text-xl text-gray-700 mb-8">
-                  Discover your unique digital identity by AI analysis of your activities across all EVM and non-EVM chains you use. We analyze your activity patterns across all chains, including non-EVM chains like Solana and Sui.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                  <div className="flex items-center gap-2 text-green-700 bg-green-50 px-3 py-1.5 rounded-full text-sm font-bold animate-pulse">
-                    <LucideShieldCheck className="h-4 w-4" />
-                    <span>Free analysis limited to April 2025!</span>
-                  </div>
-                  <a 
-                    href="#features" 
-                    className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold transition-colors"
-                  >
-                    <span>Explore Features</span>
-                    <ChevronDown className="h-5 w-5" />
-                  </a>
-                </div>
-              </div>
-
-              {/* Right: Input form */}
-              <div className="lg:w-1/2 w-full max-w-md mx-auto">
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-gray-200 shadow-xl">
-                  {/* Error message display */}
-                  {submitError && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
-                      {submitError}
-                    </div>
-                  )}
-                  
-                  {submittedInfo ? (
-                    <div className="mt-8 flex flex-col items-center">
-                      <SuccessMessage chainId={submittedInfo.chainId} address={submittedInfo.address} />
-                      <div className="mt-6 text-center">
-                        <p className="text-gray-700 mb-4">
-                          Analysis results will be provided as an NFT minted to your provided wallet address in about 2 weeks. It may take longer depending on circumstances.
-                        </p>
-                        <div className="flex justify-center gap-4 mt-4">
-                          <button
-                            onClick={() => shareToTelegram(submittedInfo.chainId)}
-                            className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors"
-                            aria-label="Share on Telegram"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M21.8 5.1c-.1-.3-.3-.5-.5-.7-.4-.2-.8-.3-1.3-.2 0 0-18 6.4-18.7 7.1-.3.3-.3.6-.3.8.1.5.5.7.9.9.6.2 1.5.5 1.5.5l4.7 1.4c.2.7 1.1 3.8 1.3 4.5.1.4.3.9.6 1 .3.2.6.1.8 0 .6-.2 1-.7 1-.7l2.6 2.1c.5.4 1.2.3 1.4.3.8-.2.9-1 .9-1s2.8-11.2 2.9-12.6c0-.2 0-.3 0-.5-.1-.4-.2-.5-.3-.7zm-3.2 2L9.9 15l-.3 3.4L8 14l10.6-6.9z" fill="currentColor" strokeWidth="0"></path>
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => shareToTwitter(submittedInfo.chainId)}
-                            className="bg-black text-white p-2 rounded-full hover:bg-gray-800 transition-colors"
-                            aria-label="Share on X(Twitter)"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => copyToClipboard(submittedInfo.chainId)}
-                            className="bg-gray-700 text-white p-2 rounded-full hover:bg-gray-800 transition-colors"
-                            aria-label="Copy text"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="mb-6 text-center">
-                        <h2 className="text-2xl font-bold mb-2">What&apos;s My Onchain Identity?</h2>
-                        <p className="text-gray-600">Enter your chain and address to receive your unique NFT</p>
-                      </div>
-                      <AddressForm onSubmit={handleAddressSubmit} />
-                    </>
-                  )}
-                </div>
-              </div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-gray-200 shadow-xl max-w-4xl mx-auto">
+              {testCompleted && result ? (
+                <PersonalityResult 
+                  result={result}
+                  onRestart={resetTest}
+                  secondaryType={secondaryTypeInfo.type}
+                  secondaryTypePercent={secondaryTypeInfo.percent}
+                />
+              ) : (
+                <PersonalityTest 
+                  currentQuestion={currentQuestion}
+                  onAnswer={handleQuestionAnswer}
+                  answers={answers}
+                  questions={testMode === "simple" ? simpleQuestions : questions}
+                />
+              )}
             </div>
           </div>
         </section>
 
-        {/* Features section */}
-        <section id="features" className="py-20 bg-white">
+        {/* Feature section */}
+        <section id="about" className="py-20 bg-white">
           <div className="container mx-auto px-4">
-            <FeatureSection />
-          </div>
-        </section>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">웹3 성격유형 테스트에 대하여</h2>
+              <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+                웹3 커뮤니티의 밈 문화와 활동 패턴을 분석하여 20가지 이상의 독특한 성격유형을 정의했습니다.
+                이 테스트를 통해 자신이 어떤 웹3 유형인지 재미있게 알아보세요!
+              </p>
+            </div>
 
-        {/* Process section */}
-        <section id="process" className="py-20">
-          <ProcessSteps />
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-blue-50 p-6 rounded-xl">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold mb-2">온체인 NFT 민팅</h3>
+                <p className="text-gray-700">
+                  테스트 결과를 NFT로 발행하여 지갑에 영원히 소장하세요. 
+                  당신의 웹3 정체성을 증명하는 유일무이한 디지털 자산이 됩니다.
+                </p>
+              </div>
+
+              <div className="bg-purple-50 p-6 rounded-xl">
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold mb-2">웹3 특화 유형</h3>
+                <p className="text-gray-700">
+                  기존 MBTI의 16유형을 넘어, 웹3 사용자들의 특별한 행동 패턴과 
+                  성향을 반영한 20가지 이상의 다양한 유형을 정의했습니다.
+                </p>
+              </div>
+
+              <div className="bg-green-50 p-6 rounded-xl">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold mb-2">커뮤니티 연결</h3>
+                <p className="text-gray-700">
+                  같은 유형의 사람들과 커뮤니티를 형성하고 소통할 수 있습니다.
+                  당신과 비슷한 웹3 성향을 가진 사람들을 찾아보세요.
+                </p>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* Call to action section */}
         <section className="py-16 bg-gradient-to-r from-blue-50 to-purple-50">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-6">Start Your Analysis Now</h2>
+            <h2 className="text-3xl font-bold mb-6">지금 바로 테스트를 시작하세요</h2>
             <p className="text-lg text-gray-700 max-w-2xl mx-auto mb-8">
-              Want to discover what characteristics your onchain activities have? Choose any chain, whether Ethereum, Solana, Sui, or others, and start right now.
+              {testMode === "simple" 
+                ? "간단 테스트는 약 2분 정도 소요되며, 총 10개의 질문으로 이루어져 있습니다." 
+                : "심화 테스트는 약 5분 정도 소요되며, 총 25개의 질문으로 이루어져 있습니다."}
+              당신이 어떤 웹3 성격 유형인지 지금 바로 확인해보세요!
             </p>
-            <div className="flex flex-col items-center gap-4">
-              <a 
-                href="#top" 
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-full font-semibold hover:from-blue-600 hover:to-purple-700 transition-all shadow-md"
+            <div className="flex justify-center">
+              <button 
+                onClick={resetTest}
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:from-blue-600 hover:to-purple-700 transition-all shadow-md"
               >
-                <span>Start Analysis</span>
-                <ArrowRight className="h-5 w-5" />
-              </a>
-              <p className="text-xs font-semibold text-blue-600">Don&apos;t miss the free analysis opportunity limited to April 2025!</p>
-              <p className="text-xs text-gray-600 mt-1">Analysis results will be provided as an NFT minted to your wallet address in about 2 weeks</p>
+                <span>테스트 시작하기</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </button>
             </div>
           </div>
         </section>
